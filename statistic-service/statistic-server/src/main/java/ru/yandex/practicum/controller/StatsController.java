@@ -2,7 +2,6 @@ package ru.yandex.practicum.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,10 @@ import ru.yandex.practicum.StatisticRequestDto;
 import ru.yandex.practicum.model.StatisticFilter;
 import ru.yandex.practicum.service.StatsService;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,19 +37,21 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<StatisticInfoDto> getStatistic(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
-                                                   @RequestParam(name = "start") LocalDateTime start,
-                                               @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
-                                                   @RequestParam(name = "end") LocalDateTime end,
+    public List<StatisticInfoDto> getStatistic(@RequestParam(name = "start") String start,
+                                               @RequestParam(name = "end") String end,
                                                @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
                                                @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
         log.info("GET \"/stats?start={}&end={}&uris={}&unique={}\"", start, end, uris, unique);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime startLDT = LocalDateTime.parse(URLDecoder.decode(start, StandardCharsets.UTF_8), formatter);
+        LocalDateTime endLDT = LocalDateTime.parse(URLDecoder.decode(end, StandardCharsets.UTF_8), formatter);
         StatisticFilter statisticFilter = StatisticFilter.builder()
-                .start(start)
-                .end(end)
+                .start(startLDT)
+                .end(endLDT)
                 .uris(uris)
                 .unique(unique)
                 .build();
+
         List<StatisticInfoDto> statisticInfoDto = statsService.getAllByFilter(statisticFilter);
         log.debug("return: " + statisticInfoDto.toString());
         return statisticInfoDto;

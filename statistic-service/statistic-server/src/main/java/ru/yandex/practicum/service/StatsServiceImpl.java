@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class StatsServiceImpl implements StatsService{
+public class StatsServiceImpl implements StatsService {
     final StatisticRepository statisticRepository;
 
     @Override
@@ -27,7 +27,7 @@ public class StatsServiceImpl implements StatsService{
 
     @Override
     public List<StatisticInfoDto> getAllByFilter(StatisticFilter statisticFilter) {
-        if(statisticFilter.getStart().isAfter(statisticFilter.getEnd())) {
+        if (statisticFilter.getStart().isAfter(statisticFilter.getEnd())) {
             throw new ValidateException("Start should be before End");
         }
 
@@ -36,7 +36,7 @@ public class StatsServiceImpl implements StatsService{
         ArrayList<String> uris = statisticFilter.getUris();
         boolean isUnique = statisticFilter.isUnique();
 
-        if(uris == null || uris.isEmpty()) {
+        if (uris == null || uris.isEmpty()) {
             if (isUnique) {
                 return statisticRepository.getAllStatisticUnique(start, end);
             } else {

@@ -1,12 +1,11 @@
+/*
 package ru.yandex.practicum;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @RestController
@@ -24,15 +23,15 @@ public class TestController {
     }
 
     @GetMapping("/statsTest")
-    public ResponseEntity<Object> getAllByFilter(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
-                                               @RequestParam(name = "start") LocalDateTime start,
-                                               @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
-                                               @RequestParam(name = "end") LocalDateTime end,
-                                               @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
-                                               @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
+    public ResponseEntity<Object> getAllByFilter(@RequestParam(name = "start") String start,
+                                                 @RequestParam(name = "end") String end,
+                                                 @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
+                                                 @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
         log.info("TEST-GET \"/stats?start={}&end={}&uris={}&unique={}\"", start, end, uris, unique);
-        ResponseEntity<Object> response = statisticClient.getAllByFilter(start,end, uris,unique);
+        System.out.println("start: " + start + "\n" + "end: " + end);
+        ResponseEntity<Object> response = statisticClient.getAllByFilter(start, end, uris, unique);
         log.debug("return: " + response.toString());
         return response;
     }
 }
+*/

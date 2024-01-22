@@ -7,15 +7,18 @@ services:
       - "9090:9090"
     depends_on:
       - statistic-server-db
-  #    environment:
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://statistic-server-db:5432/ewm-statistic-server-db
+      - STATS_SERVER_URL=http://server:9090
+
 
   statistic-server-db:
-    image: postgres:14-alpine
+    image: postgres:13.7-alpine
     container_name: statistic-server-db
     ports:
       - "6541:5432"
     environment:
-      - POSTGRES_DB=statistic-server-db
+      - POSTGRES_DB=ewm-statistic-server-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
@@ -28,7 +31,7 @@ services:
     #      - ewm-main-service-db
     #
     #  ewm-main-service-db:
-    #    image: postgres:14-alpine
+    #    image: postgres:13.7-alpine
     #    container_name: ewm-main-service-db
     #    ports:
     #      - "5444:5432"

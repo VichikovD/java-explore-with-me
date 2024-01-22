@@ -2,8 +2,6 @@ package ru.yandex.practicum;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
