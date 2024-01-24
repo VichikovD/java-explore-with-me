@@ -9,8 +9,8 @@ services:
       - statistic-server-db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://statistic-server-db:5432/ewm-statistic-server-db
-      - STATS_SERVER_URL=http://server:9090
-
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
 
   statistic-server-db:
     image: postgres:13.7-alpine
@@ -22,20 +22,25 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
-    #  ewm-main-service:
-    #    build: ./main-service/
-    #    container_name: ewm-main-service
-    #    ports:
-    #      - "8080:8080"
-    #    depends_on:
-    #      - ewm-main-service-db
-    #
-    #  ewm-main-service-db:
-    #    image: postgres:13.7-alpine
-    #    container_name: ewm-main-service-db
-    #    ports:
-    #      - "5444:5432"
-    #    environment:
-    #      - POSTGRES_DB=ewm-main-service-db
-    #      - POSTGRES_USER=root
-    #      - POSTGRES_PASSWORD=root
+  ewm-main-service:
+    build: ./main-service/
+    container_name: ewm-main-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - main-service-db
+    environment:
+      - STATS_SERVER_URL=http://statistic-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-service-db:5432/ewm-main-service-db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+
+  main-service-db:
+    image: postgres:13.7-alpine
+    container_name: main-service-db
+    ports:
+      - "5444:5432"
+    environment:
+      - POSTGRES_DB=ewm-main-service-db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root

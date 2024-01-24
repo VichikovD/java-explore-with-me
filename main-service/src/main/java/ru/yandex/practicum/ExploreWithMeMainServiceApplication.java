@@ -5,10 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
-public class ExploreWithMeApplication {
-
+public class ExploreWithMeMainServiceApplication {
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(ExploreWithMeApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(ExploreWithMeMainServiceApplication.class, args);
     }
-
 }
