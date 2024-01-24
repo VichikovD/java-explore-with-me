@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.StatisticInfoDto;
+import ru.yandex.practicum.StatisticInfo;
 import ru.yandex.practicum.StatisticRequestDto;
 import ru.yandex.practicum.model.StatisticFilter;
 import ru.yandex.practicum.service.StatsService;
@@ -37,10 +37,10 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<StatisticInfoDto> getStatistic(@RequestParam(name = "start") String start,
-                                               @RequestParam(name = "end") String end,
-                                               @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
-                                               @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
+    public List<StatisticInfo> getStatistic(@RequestParam(name = "start") String start,
+                                            @RequestParam(name = "end") String end,
+                                            @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
+                                            @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
         log.info("GET \"/stats?start={}&end={}&uris={}&unique={}\"", start, end, uris, unique);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startLDT = LocalDateTime.parse(URLDecoder.decode(start, StandardCharsets.UTF_8), formatter);
@@ -52,8 +52,8 @@ public class StatsController {
                 .unique(unique)
                 .build();
 
-        List<StatisticInfoDto> statisticInfoDto = statsService.getAllByFilter(statisticFilter);
-        log.debug("return: " + statisticInfoDto.toString());
-        return statisticInfoDto;
+        List<StatisticInfo> statisticInfo = statsService.getAllByFilter(statisticFilter);
+        log.debug("return: " + statisticInfo.toString());
+        return statisticInfo;
     }
 }

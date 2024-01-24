@@ -2,7 +2,7 @@ package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.StatisticInfoDto;
+import ru.yandex.practicum.StatisticInfo;
 import ru.yandex.practicum.StatisticRequestDto;
 import ru.yandex.practicum.exception.ValidateException;
 import ru.yandex.practicum.mapper.StatisticMapper;
@@ -26,7 +26,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public List<StatisticInfoDto> getAllByFilter(StatisticFilter statisticFilter) {
+    public List<StatisticInfo> getAllByFilter(StatisticFilter statisticFilter) {
         if (statisticFilter.getStart().isAfter(statisticFilter.getEnd())) {
             throw new ValidateException("Start should be before End");
         }

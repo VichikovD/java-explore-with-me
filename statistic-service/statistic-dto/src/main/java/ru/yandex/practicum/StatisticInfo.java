@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class StatisticInfoDto {
+public class StatisticInfo {
     private String app;
     private String uri;
     private long hits;

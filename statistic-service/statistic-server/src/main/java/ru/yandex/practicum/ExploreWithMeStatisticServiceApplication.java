@@ -6,7 +6,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class ExploreWithMeStatisticServiceApplication {
-
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ExploreWithMeStatisticServiceApplication.class, args);
     }
