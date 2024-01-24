@@ -2,11 +2,9 @@ package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.Statistic;
 import ru.yandex.practicum.StatisticInfo;
-import ru.yandex.practicum.StatisticRequestDto;
 import ru.yandex.practicum.exception.ValidateException;
-import ru.yandex.practicum.mapper.StatisticMapper;
-import ru.yandex.practicum.model.Statistic;
 import ru.yandex.practicum.model.StatisticFilter;
 import ru.yandex.practicum.repository.StatisticRepository;
 
@@ -20,9 +18,8 @@ public class StatsServiceImpl implements StatsService {
     final StatisticRepository statisticRepository;
 
     @Override
-    public void create(StatisticRequestDto statisticRequestDto) {
-        Statistic statisticToSave = StatisticMapper.toModel(statisticRequestDto);
-        statisticRepository.save(statisticToSave);
+    public void create(Statistic statistic) {
+        statisticRepository.save(statistic);
     }
 
     @Override

@@ -4,27 +4,39 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
+@Entity(name = "statistics")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
-public class StatisticRequestDto {
+public class Statistic {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "statistic_id")
+    long id;
+
+    @Column(name = "app")
     @NotBlank(message = "App should not be empty")
-    private String app;
+    String app;
 
+    @Column(name = "uri")
     @NotBlank(message = "Uri should not be empty")
-    private String uri;
+    String uri;
 
+    @Column(name = "ip")
     @NotBlank(message = "Ip should not be empty")
-    private String ip;
+    String ip;
 
     @NotNull(message = "Timestamp should not be empty")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss", iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    @Column(name = "created")
+    LocalDateTime timestamp;
 }

@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.Statistic;
 import ru.yandex.practicum.StatisticInfo;
-import ru.yandex.practicum.StatisticRequestDto;
 import ru.yandex.practicum.model.StatisticFilter;
 import ru.yandex.practicum.service.StatsService;
 
@@ -30,9 +30,9 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void create(@Validated @RequestBody StatisticRequestDto statisticRequestDto) {
-        log.info("POST \"/hit Body={}", statisticRequestDto);
-        statsService.create(statisticRequestDto);
+    public void create(@Validated @RequestBody Statistic Statistic) {
+        log.info("POST \"/hit Body={}", Statistic);
+        statsService.create(Statistic);
         log.debug("Created");
     }
 
