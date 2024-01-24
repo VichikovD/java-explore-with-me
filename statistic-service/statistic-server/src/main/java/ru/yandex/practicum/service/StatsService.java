@@ -7,7 +7,7 @@ import ru.yandex.practicum.model.StatisticFilter;
 import java.util.List;
 
 public interface StatsService {
-    void create(Statistic Statistic);
+    void create(Statistic statistic);
 
     List<StatisticInfo> getAllByFilter(StatisticFilter statisticFilter);
 }

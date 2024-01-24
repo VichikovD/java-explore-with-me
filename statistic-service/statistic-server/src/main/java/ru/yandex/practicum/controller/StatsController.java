@@ -30,9 +30,9 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void create(@Validated @RequestBody Statistic Statistic) {
-        log.info("POST \"/hit Body={}", Statistic);
-        statsService.create(Statistic);
+    public void create(@Validated @RequestBody Statistic statistic) {
+        log.info("POST \"/hit Body={}", statistic);
+        statsService.create(statistic);
         log.debug("Created");
     }
 
