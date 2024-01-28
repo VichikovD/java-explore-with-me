@@ -39,10 +39,10 @@ public class EventControllerPublic {
         }
         System.out.println(sort); // testing
 
-        List<EventDto> EventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
+        List<EventDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
                 eventSort, offset, size);
-        log.debug("EventList = " + EventList);
-        return EventList;
+        log.debug("EventList = " + eventList);
+        return eventList;
     }
 
     @GetMapping("/{eventId}")
