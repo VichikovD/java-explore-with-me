@@ -2,10 +2,9 @@ package ru.yandex.practicum.category.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.category.CategoryDto;
 import ru.yandex.practicum.category.service.CategoryServiceAdmin;
 
@@ -13,14 +12,33 @@ import ru.yandex.practicum.category.service.CategoryServiceAdmin;
 @RequestMapping("/admin/categories")
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class CategoryControllerAdmin {
     final CategoryServiceAdmin categoryService;
 
     @PostMapping
-    public CategoryDto create(@RequestBody CategoryDto categoryDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto create(@RequestBody @Validated CategoryDto categoryDto) {
         log.info("POST \"/admin/categories\" Body={}", categoryDto);
-        CategoryDto category = categoryService.create(categoryDto);
-        log.debug("category = " + category);
-        return category;
+        CategoryDto categoryToReturn = categoryService.create(categoryDto);
+        log.debug("Created category=" + categoryToReturn);
+        return categoryToReturn;
+    }
+
+    @PatchMapping("/{catId}")
+    public CategoryDto patch(@RequestBody @Validated CategoryDto categoryDto,
+                             @PathVariable(name = "catId") long catId) {
+        log.info("PATCH \"/admin/categories/{}\"", catId);
+        CategoryDto categoryToReturn = categoryService.patch(categoryDto, catId);
+        log.debug("Updated category with id=" + catId + System.lineSeparator() + "Category=" + categoryToReturn);
+        return categoryToReturn;
+    }
+
+    @DeleteMapping("/{catId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable(name = "catId") long catId) {
+        log.info("DELETE \"/admin/categories/{}\"", catId);
+        categoryService.delete(catId);
+        log.debug("Deleted category with id=" + catId);
     }
 }
