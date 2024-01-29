@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.OffsetPageable;
 import ru.yandex.practicum.category.CategoryDto;
 import ru.yandex.practicum.category.service.CategoryServicePublic;
+import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;
 

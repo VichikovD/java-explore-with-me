@@ -15,41 +15,41 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserServiceAdminImpl implements UserServiceAdmin {
-    final UserRepository categoryRepository;
+    final UserRepository userRepository;
 
     @Override
     public UserDto create(UserDto userDto) {
         User userToSave = UserMapper.toModel(userDto);
-        User userSaved = categoryRepository.save(userToSave);
+        User userSaved = userRepository.save(userToSave);
         return UserMapper.toDto(userSaved);
     }
 
     @Override
     public UserDto getById(long userId) {
-        User user = categoryRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
         return UserMapper.toDto(user);
     }
 
     @Override
     public List<UserDto> getFiltered(Pageable pageable) {
-        List<User> categoryList = categoryRepository.findAll(pageable).getContent();
+        List<User> categoryList = userRepository.findAll(pageable).getContent();
         return UserMapper.listToDtoList(categoryList);
     }
 
     /*@Override
     public CategoryDto patch(CategoryDto categoryDto, long catId) {
-        Category categoryToChange = categoryRepository.findById(catId)
+        Category categoryToChange = userRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
         CategoryMapper.updateByDto(categoryToChange, categoryDto);
-        Category categorySaved = categoryRepository.save(categoryToChange);
+        Category categorySaved = userRepository.save(categoryToChange);
         return CategoryMapper.toDto(categorySaved);
     }*/
 
     @Override
     public void delete(long userId) {
-        categoryRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Category with id=" + userId + " was not found"));
-        categoryRepository.deleteById(userId);
+        userRepository.deleteById(userId);
     }
 }

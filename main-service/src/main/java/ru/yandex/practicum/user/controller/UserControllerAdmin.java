@@ -7,9 +7,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.OffsetPageable;
 import ru.yandex.practicum.user.UserDto;
 import ru.yandex.practicum.user.service.UserServiceAdmin;
+import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;
 

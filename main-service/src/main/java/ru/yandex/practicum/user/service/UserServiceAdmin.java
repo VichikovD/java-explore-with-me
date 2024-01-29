@@ -8,9 +8,9 @@ import java.util.List;
 public interface UserServiceAdmin {
     UserDto create(UserDto userDto);
 
-    public UserDto getById(long userId);
+    UserDto getById(long userId);
 
-    public List<UserDto> getFiltered(Pageable pageable);
+    List<UserDto> getFiltered(Pageable pageable);
 
     void delete(long userId);
 }

@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.event.EventDto;
 import ru.yandex.practicum.event.EventSort;
-import ru.yandex.practicum.event.service.EventService;
+import ru.yandex.practicum.event.dto.EventInfoDto;
+import ru.yandex.practicum.event.service.EventServicePublic;
 
 import java.util.List;
 
@@ -15,18 +15,18 @@ import java.util.List;
 @RequestMapping("/events")
 @RequiredArgsConstructor
 public class EventControllerPublic {
-    final EventService eventService;
+    final EventServicePublic eventService;
 
     @GetMapping
-    public List<EventDto> getFiltered(@RequestParam(name = "text") String text,
-                                      @RequestParam(name = "categories") int[] categories,
-                                      @RequestParam(name = "paid") boolean paid,
-                                      @RequestParam(name = "rangeStart") String rangeStart,
-                                      @RequestParam(name = "rangeEnd") String rangeEnd,
-                                      @RequestParam(name = "onlyAvailable") boolean onlyAvailable,
-                                      @RequestParam(name = "sort") EventSort eventSort,
-                                      @RequestParam(name = "from", defaultValue = "0") int offset,
-                                      @RequestParam(name = "size", defaultValue = "10") int size) {
+    public List<EventInfoDto> getFiltered(@RequestParam(name = "text") String text,
+                                          @RequestParam(name = "categories") int[] categories,
+                                          @RequestParam(name = "paid") boolean paid,
+                                          @RequestParam(name = "rangeStart") String rangeStart,
+                                          @RequestParam(name = "rangeEnd") String rangeEnd,
+                                          @RequestParam(name = "onlyAvailable") boolean onlyAvailable,
+                                          @RequestParam(name = "sort") EventSort eventSort,
+                                          @RequestParam(name = "from", defaultValue = "0") int offset,
+                                          @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("GET \"/events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}\"",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, eventSort, offset, size);
         Sort sort;
@@ -39,16 +39,16 @@ public class EventControllerPublic {
         }
         System.out.println(sort); // testing
 
-        List<EventDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
+        List<EventInfoDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
                 eventSort, offset, size);
         log.debug("EventList = " + eventList);
         return eventList;
     }
 
     @GetMapping("/{eventId}")
-    public EventDto getById(@PathVariable(name = "eventId") int eventId) {
+    public EventInfoDto getById(@PathVariable(name = "eventId") int eventId) {
         log.info("GET \"/events/{}", eventId);
-        EventDto event = eventService.getById(eventId);
+        EventInfoDto event = eventService.getById(eventId);
         log.debug("event = " + event);
         return event;
     }
