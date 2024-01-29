@@ -51,7 +51,7 @@ public class Event {
     LocalDateTime eventDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "initiator_id")
     User initiator;
 
     @ManyToOne
