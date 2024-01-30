@@ -1,17 +1,18 @@
 package ru.yandex.practicum.event.service;
 
 import org.springframework.data.domain.Pageable;
-import ru.yandex.practicum.event.dto.EventInfoDto;
-import ru.yandex.practicum.event.dto.EventRequestDto;
+import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
+import ru.yandex.practicum.event.model.dto.EventRequestDto;
+import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
 
 import java.util.List;
 
 
 public interface EventServicePrivate {
-    EventInfoDto create(long initiatorId, EventRequestDto eventRequestDto);
+    EventFullInfoDto create(long initiatorId, EventRequestDto eventRequestDto);
 
-    List<EventInfoDto> getByInitiatorIdFiltered(long initiatorId, Pageable pageable);
+    List<EventShortInfoDto> getByInitiatorIdFiltered(long initiatorId, Pageable pageable);
 
-    EventInfoDto getById(int compId);
+    EventFullInfoDto getByIdAndInitiatorId(long initiatorId, long eventId);
 
 }

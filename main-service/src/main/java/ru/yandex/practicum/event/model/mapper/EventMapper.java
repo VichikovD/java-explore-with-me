@@ -1,10 +1,12 @@
-package ru.yandex.practicum.event;
+package ru.yandex.practicum.event.model.mapper;
 
 import ru.yandex.practicum.category.Category;
 import ru.yandex.practicum.category.CategoryMapper;
-import ru.yandex.practicum.event.dto.EventInfoDto;
-import ru.yandex.practicum.event.dto.EventRequestDto;
-import ru.yandex.practicum.event.dto.PublishState;
+import ru.yandex.practicum.event.model.Event;
+import ru.yandex.practicum.event.model.PublishState;
+import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
+import ru.yandex.practicum.event.model.dto.EventRequestDto;
+import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
 import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserMapper;
 
@@ -13,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventMapper {
-    public static EventInfoDto toDto(Event event) {
-        return EventInfoDto.builder()
+    public static EventFullInfoDto toFullInfoDto(Event event) {
+        return EventFullInfoDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.toDto(event.getCategory()))
@@ -22,12 +24,24 @@ public class EventMapper {
                 .description(event.getDescription())
                 .eventDate(event.getEventDate())
                 .initiator(UserMapper.toDto(event.getInitiator()))
-                .location(event.getLocation())
+                .location(LocationMapper.toInfoDto(event.getLocation()))
                 .paid(event.isPaid())
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn())
                 .requestModeration(event.isRequestModeration())
                 .state(event.getState())
+                .title(event.getTitle())
+                .build();
+    }
+
+    public static EventShortInfoDto toShortInfoDto(Event event) {
+        return EventShortInfoDto.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .category(CategoryMapper.toDto(event.getCategory()))
+                .eventDate(event.getEventDate())
+                .initiator(UserMapper.toDto(event.getInitiator()))
+                .paid(event.isPaid())
                 .title(event.getTitle())
                 .build();
     }
@@ -50,10 +64,18 @@ public class EventMapper {
                 .build();
     }
 
-    public static List<EventInfoDto> modelListToDtoList(List<Event> eventList) {
-        List<EventInfoDto> dtoList = new ArrayList<>();
+    public static List<EventFullInfoDto> modelListToFullInfoDtoList(List<Event> eventList) {
+        List<EventFullInfoDto> dtoList = new ArrayList<>();
         for (Event event : eventList) {
-            dtoList.add(toDto(event));
+            dtoList.add(toFullInfoDto(event));
+        }
+        return dtoList;
+    }
+
+    public static List<EventShortInfoDto> modelListToShortInfoDtoList(List<Event> eventList) {
+        List<EventShortInfoDto> dtoList = new ArrayList<>();
+        for (Event event : eventList) {
+            dtoList.add(toShortInfoDto(event));
         }
         return dtoList;
     }

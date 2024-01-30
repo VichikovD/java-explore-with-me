@@ -1,12 +1,10 @@
-package ru.yandex.practicum.event;
+package ru.yandex.practicum.event.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.category.Category;
-import ru.yandex.practicum.event.dto.PublishState;
 import ru.yandex.practicum.user.User;
-import ru.yandex.practicum.util.Location;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

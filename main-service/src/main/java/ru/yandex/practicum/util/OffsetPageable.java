@@ -23,6 +23,19 @@ public class OffsetPageable implements Pageable {
         this.sort = sort;
     }
 
+    public OffsetPageable(int offset, int limit) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("Offset must not be less than 0");
+        }
+        if (limit < 1) {
+            throw new IllegalArgumentException("Limit must not be less than 1");
+        }
+        this.offset = offset;
+        this.limit = limit;
+        this.sort = Sort.unsorted();
+    }
+
+
     @Override
     public int getPageNumber() {
         return offset / limit;

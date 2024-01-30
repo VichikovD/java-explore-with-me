@@ -1,11 +1,11 @@
-package ru.yandex.practicum.event.dto;
+package ru.yandex.practicum.event.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.category.CategoryDto;
+import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.user.UserDto;
-import ru.yandex.practicum.util.Location;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @Builder
-public class EventInfoDto {
+public class EventFullInfoDto {
     Long id;
 
     String annotation;
@@ -37,7 +37,7 @@ public class EventInfoDto {
 
     UserDto initiator;
 
-    Location location;
+    LocationInfoDto location;
 
     boolean paid;
 

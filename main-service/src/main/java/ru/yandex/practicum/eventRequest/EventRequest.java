@@ -1,6 +1,6 @@
 package ru.yandex.practicum.eventRequest;
 
-import ru.yandex.practicum.event.Event;
+import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.user.User;
 
 import javax.persistence.*;

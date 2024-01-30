@@ -2,9 +2,9 @@ package ru.yandex.practicum.event.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.event.EventRepository;
-import ru.yandex.practicum.event.EventSort;
-import ru.yandex.practicum.event.dto.EventInfoDto;
+import ru.yandex.practicum.event.model.EventSort;
+import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
+import ru.yandex.practicum.event.repository.EventRepository;
 import ru.yandex.practicum.event.service.EventServicePublic;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class EventServicePublicImpl implements EventServicePublic {
     final EventRepository eventRepository;
 
     @Override
-    public List<EventInfoDto> getFiltered(String text, int[] categories, boolean paid, String rangeStart, String rangeEnd, boolean onlyAvailable, EventSort eventSort, int offset, int size) {
+    public List<EventFullInfoDto> getFiltered(String text, int[] categories, boolean paid, String rangeStart, String rangeEnd, boolean onlyAvailable, EventSort eventSort, int offset, int size) {
         return null;
         //Обратите внимание: \n- это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события
         // - текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв
@@ -26,7 +26,7 @@ public class EventServicePublicImpl implements EventServicePublic {
     }
 
     @Override
-    public EventInfoDto getById(int compId) {
+    public EventFullInfoDto getById(int compId) {
         return null;
         // Обратите внимание:\n- событие должно быть опубликовано - информация о событии должна включать в себя
         // количество просмотров и количество подтвержденных запросов - информацию о том, что по этому эндпоинту был осуществлен

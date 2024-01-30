@@ -43,7 +43,7 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
                 .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
         CategoryMapper.updateByDto(categoryToChange, categoryDto);
         Category categorySaved = userRepository.save(categoryToChange);
-        return CategoryMapper.toDto(categorySaved);
+        return CategoryMapper.toFullInfoDto(categorySaved);
     }*/
 
     @Override
