@@ -42,7 +42,7 @@ public class EventRequestDto {
     Boolean paid;
 
     @NotNull(message = "Field: participantLimit. Error: must not be blank.")
-    Integer participantLimit;
+    Long participantLimit;
 
     @NotNull(message = "Field: requestModeration. Error: must not be blank.")
     Boolean requestModeration;

@@ -60,7 +60,7 @@ public class Event {
     boolean paid;
 
     @Column(name = "participant_limit")
-    int participantLimit;
+    long participantLimit;
 
     @Column(name = "published_on")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

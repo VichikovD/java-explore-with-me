@@ -21,7 +21,7 @@ public class EventShortInfoDto {
 
     CategoryDto category;
 
-    int confirmedRequests;
+    long confirmedRequests;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

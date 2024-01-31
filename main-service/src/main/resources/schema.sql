@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS event_requests (
     event_id BIGINT NOT NULL REFERENCES events (event_id) ON DELETE RESTRICT,
     user_id BIGINT NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
     status VARCHAR NOT NULL,
-    created TIMESTAMP NOT NULL
+    created TIMESTAMP NOT NULL,
+    UNIQUE (event_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS compilations (

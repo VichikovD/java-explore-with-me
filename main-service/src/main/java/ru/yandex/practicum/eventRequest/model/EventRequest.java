@@ -1,11 +1,18 @@
-package ru.yandex.practicum.eventRequest;
+package ru.yandex.practicum.eventRequest.model;
 
+import lombok.*;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@ToString
+@Builder
 @Entity
 @Table(name = "event_requests")
 public class EventRequest {
@@ -23,6 +30,7 @@ public class EventRequest {
     User requester;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     EventRequestStatus status;
 
     @Column(name = "created")

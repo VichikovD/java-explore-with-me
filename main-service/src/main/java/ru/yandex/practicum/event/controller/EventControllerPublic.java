@@ -30,6 +30,7 @@ public class EventControllerPublic {
                                               @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("GET \"/events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}\"",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, eventSort, offset, size);
+
         Sort sort;
         if (EventSort.EVENT_DATE.equals(eventSort)) {
             sort = Sort.by(Sort.Direction.ASC, "eventDate");
@@ -48,9 +49,13 @@ public class EventControllerPublic {
 
     // "информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики"
     @GetMapping("/{eventId}")
-    public EventFullInfoDto getById(@PathVariable(name = "eventId") int eventId, HttpServletRequest request) {
-        log.info("GET \"/events/{} ", eventId);
-        EventFullInfoDto event = eventService.getById(eventId);
+    public EventFullInfoDto getById(@PathVariable(name = "eventId") int eventId,
+                                    HttpServletRequest request) {
+        String address = request.getRemoteAddr();
+        String uri = request.getRequestURI();
+        log.info("GET \"/events/{} Address={}, URI={}", eventId, address, uri);
+
+        EventFullInfoDto event = eventService.getById(eventId, address, uri);
         log.debug("event = " + event);
         return event;
     }

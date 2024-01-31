@@ -15,6 +15,8 @@ import ru.yandex.practicum.event.model.mapper.EventMapper;
 import ru.yandex.practicum.event.repository.EventRepository;
 import ru.yandex.practicum.event.repository.LocationRepository;
 import ru.yandex.practicum.event.service.EventServicePrivate;
+import ru.yandex.practicum.eventRequest.EventRequestRepository;
+import ru.yandex.practicum.eventRequest.model.EventRequestStatus;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserRepository;
@@ -25,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventServicePrivateImpl implements EventServicePrivate {
     final EventRepository eventRepository;
+    final EventRequestRepository eventRequestRepository;
     final UserRepository userRepository;
     final CategoryRepository categoryRepository;
     final LocationRepository locationRepository;
@@ -71,11 +74,12 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
     @Override
     public EventFullInfoDto getByIdAndInitiatorId(long initiatorId, long eventId) {
-        Event event = eventRepository.findByIdAndInitiatorId(initiatorId, eventId)
-                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, initiatorId)
+                .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found for initiator with id=" + initiatorId));
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(event);
-        eventFullInfoDto.setConfirmedRequests(-1);
+
+        long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
+        eventFullInfoDto.setConfirmedRequests(confirmedRequests);
         eventFullInfoDto.setViews(-1);
         return eventFullInfoDto;
         // Обратите внимание:\n- событие должно быть опубликовано - информация о событии должна включать в себя

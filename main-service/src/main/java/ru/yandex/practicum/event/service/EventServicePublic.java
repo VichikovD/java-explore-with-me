@@ -10,6 +10,6 @@ public interface EventServicePublic {
     List<EventFullInfoDto> getFiltered(String text, int[] categories, boolean paid, String rangeStart, String rangeEnd,
                                        boolean onlyAvailable, EventSort eventSort, int offset, int size);
 
-    EventFullInfoDto getById(int compId);
+    EventFullInfoDto getById(int compId, String address, String uri);
 
 }
