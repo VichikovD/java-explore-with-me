@@ -16,7 +16,7 @@ public class EventRequestMapper {
 
     public static List<EventRequestInfoDto> listModelToListInfoDto(List<EventRequest> eventRequestList) {
         List<EventRequestInfoDto> eventRequestInfoDtoList = new ArrayList<>();
-        for(EventRequest eventRequest : eventRequestList) {
+        for (EventRequest eventRequest : eventRequestList) {
             eventRequestInfoDtoList.add(toInfoDto(eventRequest));
         }
         return eventRequestInfoDtoList;

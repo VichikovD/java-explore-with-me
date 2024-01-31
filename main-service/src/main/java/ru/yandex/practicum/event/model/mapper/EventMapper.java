@@ -3,8 +3,10 @@ package ru.yandex.practicum.event.model.mapper;
 import ru.yandex.practicum.category.Category;
 import ru.yandex.practicum.category.CategoryMapper;
 import ru.yandex.practicum.event.model.Event;
+import ru.yandex.practicum.event.model.Location;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
+import ru.yandex.practicum.event.model.dto.EventRequestAdminDto;
 import ru.yandex.practicum.event.model.dto.EventRequestDto;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
 import ru.yandex.practicum.user.User;
@@ -78,5 +80,56 @@ public class EventMapper {
             dtoList.add(toShortInfoDto(event));
         }
         return dtoList;
+    }
+
+    public static void updateModelWithRequestDtoNotNullFields(Event event, EventRequestAdminDto eventRequestDto, Category category, Location location) {
+        String annotation = eventRequestDto.getAnnotation();
+        if (annotation != null) {
+            event.setAnnotation(annotation);
+        }
+
+        if (category != null) {
+            event.setCategory(category);
+        }
+
+        String description = eventRequestDto.getDescription();
+        if (description != null) {
+            event.setDescription(description);
+        }
+
+        LocalDateTime eventDate = eventRequestDto.getEventDate();
+        if (eventDate != null) {
+            event.setEventDate(eventDate);
+        }
+
+
+        if (location != null) {
+            event.setLocation(location);
+        }
+
+        Boolean paid = eventRequestDto.getPaid();
+        if (paid != null) {
+            event.setPaid(paid);
+        }
+
+        Long participantLimit = eventRequestDto.getParticipantLimit();
+        if (participantLimit != null) {
+            event.setParticipantLimit(participantLimit);
+        }
+
+        Boolean requestModeration = eventRequestDto.getRequestModeration();
+        if (requestModeration != null) {
+            event.setRequestModeration(requestModeration);
+        }
+
+        PublishState.StateAction stateAction = eventRequestDto.getStateAction();
+        if (stateAction != null) {
+            event.setState(PublishState.StateAction.stateFromAction(stateAction));
+        }
+
+        String title = eventRequestDto.getTitle();
+        if (title != null) {
+            event.setTitle(title);
+        }
     }
 }

@@ -22,9 +22,9 @@ public class TestController {
 
     @GetMapping("/statsTest")
     public List<StatisticInfo> getAllByFilter(@RequestParam(name = "start") String start,
-                                          @RequestParam(name = "end") String end,
-                                          @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
-                                          @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
+                                              @RequestParam(name = "end") String end,
+                                              @RequestParam(name = "uris", defaultValue = "") ArrayList<String> uris,
+                                              @RequestParam(name = "unique", defaultValue = "false") boolean unique) {
         log.info("TEST-GET \"/stats?start={}&end={}&uris={}&unique={}\"", start, end, uris, unique);
         System.out.println("start: " + start + "\n" + "end: " + end);
         List<StatisticInfo> response = statisticClient.getAllByFilter(new StatisticFilterDto(start, end, uris, unique));

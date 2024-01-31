@@ -31,7 +31,7 @@ public class EventRequestDto {
     //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     //@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @InTwoHours(message = "Field: eventDate. Error: должно содержать дату, которая еще не наступила.")
+    @InTwoHours(message = "Field: eventDate. Error: Must contain time at least 2 hours ahead of now")
     LocalDateTime eventDate;
 
 

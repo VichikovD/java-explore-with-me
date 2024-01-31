@@ -44,6 +44,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Category with id=" + categoryId + " was not found"));
 
+
         eventRequestDto.setLocation(locationWithId);
         Event eventToCreate = EventMapper.requestDtoToModel(eventRequestDto, category, initiator);
         Event eventCreated = eventRepository.save(eventToCreate);

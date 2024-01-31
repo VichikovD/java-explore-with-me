@@ -27,6 +27,17 @@ public class ApplicationExceptionHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidateException(IllegalArgumentException e) {
+        String errorMessage = e.getMessage();
+        log.error("Illegal Argument Exception Exception = {}", errorMessage);
+        return new ErrorResponse("BAD_REQUEST",
+                "Incorrectly made request.",
+                errorMessage,
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
         String errorMessage = e.getMessage();
