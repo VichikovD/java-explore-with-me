@@ -1,15 +1,18 @@
 package ru.yandex.practicum.event.service;
 
-import ru.yandex.practicum.event.model.EventSort;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
+import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
 public interface EventServicePublic {
-    List<EventFullInfoDto> getFiltered(String text, int[] categories, boolean paid, String rangeStart, String rangeEnd,
-                                       boolean onlyAvailable, EventSort eventSort, int offset, int size);
+    List<EventShortInfoDto> getFiltered(String text, List<Long> categories, boolean paid, LocalDateTime rangeStart,
+                                        LocalDateTime rangeEnd, boolean onlyAvailable, Pageable pageable, Sort sort);
 
-    EventFullInfoDto getById(int compId, String address, String uri);
+    EventFullInfoDto getPublishedById(int eventId, String address, String uri);
 
 }

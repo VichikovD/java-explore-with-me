@@ -64,4 +64,16 @@ public class EventRequestServiceImpl implements EventRequestService {
         List<EventRequest> eventRequestList = eventRequestRepository.findAllByRequesterId(requesterId);
         return EventRequestMapper.listModelToListInfoDto(eventRequestList);
     }
+
+    @Override
+    public EventRequestInfoDto cancelByRequesterIdAndEventRequestId(long requesterId, long eventRequestId) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new NotFoundException("User with id=" + requesterId + " was not found"));
+        EventRequest eventRequest = eventRequestRepository.findById(eventRequestId)
+                .orElseThrow(() -> new NotFoundException("Event request with id=" + eventRequestId + " was not found"));
+
+        eventRequest.setStatus(EventRequestStatus.CANCELED);
+        EventRequest eventRequestUpdated = eventRequestRepository.save(eventRequest);
+        return EventRequestMapper.toInfoDto(eventRequestUpdated);
+    }
 }

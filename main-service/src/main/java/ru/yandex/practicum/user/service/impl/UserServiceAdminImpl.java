@@ -32,8 +32,14 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
     }
 
     @Override
-    public List<UserDto> getFiltered(Pageable pageable) {
+    public List<UserDto> getAllFiltered(Pageable pageable) {
         List<User> categoryList = userRepository.findAll(pageable).getContent();
+        return UserMapper.listToDtoList(categoryList);
+    }
+
+    @Override
+    public List<UserDto> getAllByIdInFiltered(List<Long> users, Pageable pageable) {
+        List<User> categoryList = userRepository.findAllByIdIn(users, pageable);
         return UserMapper.listToDtoList(categoryList);
     }
 

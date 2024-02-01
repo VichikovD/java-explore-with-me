@@ -2,6 +2,7 @@ package ru.yandex.practicum.event.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.category.Category;
 import ru.yandex.practicum.category.CategoryRepository;
@@ -80,7 +81,13 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     @Override
-    public List<EventFullInfoDto> getFullFiltered() {
-        return null;
+    public List<EventFullInfoDto> getFullFiltered(List<Long> users, List<PublishState> states, List<Long> categories,
+                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
+        List<Event> eventList =
+                eventRepository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
+                        users, states, categories, rangeStart, rangeEnd, pageable);
+        List<EventFullInfoDto> eventFullInfoDtoList = EventMapper.modelListToFullInfoDtoList(eventList);
+        // eventFullInfoDtoList + confirmedRequests + views TO DO
+        return eventFullInfoDtoList;
     }
 }

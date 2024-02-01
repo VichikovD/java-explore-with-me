@@ -2,6 +2,7 @@ package ru.yandex.practicum.eventRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.eventRequest.model.EventRequestInfoDto;
 
@@ -11,10 +12,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users/{userId}/requests")
-public class EventRequestController {
+public class EventRequestControllerPrivate {
     final EventRequestService eventRequestService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventRequestInfoDto create(@PathVariable(name = "userId") long requesterId,
                                       @RequestParam(name = "eventId") long eventId) {
         log.info("POST \"/users/{}/requests\" eventId={}", requesterId, eventId);
@@ -29,5 +31,14 @@ public class EventRequestController {
         List<EventRequestInfoDto> eventRequestInfoDtoList = eventRequestService.getAllByRequesterId(requesterId);
         log.debug("EventRequestInfoDtoList=" + eventRequestInfoDtoList);
         return eventRequestInfoDtoList;
+    }
+
+    @PatchMapping("/{requestId}/cancel")
+    public EventRequestInfoDto cancelByRequesterIdAndEventRequestId(@PathVariable(name = "userId") long requesterId,
+                                                                    @PathVariable(name = "requestId") long eventRequestId) {
+        log.info("PATCH \"/users/{}/requests/{}/cancel\"", requesterId, eventRequestId);
+        EventRequestInfoDto eventRequestInfoDto = eventRequestService.cancelByRequesterIdAndEventRequestId(requesterId, eventRequestId);
+        log.debug("EventRequestInfoDtoList=" + eventRequestInfoDto);
+        return eventRequestInfoDto;
     }
 }

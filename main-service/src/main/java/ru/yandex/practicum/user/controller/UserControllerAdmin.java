@@ -39,12 +39,18 @@ public class UserControllerAdmin {
     }
 
     @GetMapping
-    public List<UserDto> getFiltered(@RequestParam(name = "from", defaultValue = "0") int offset,
+    public List<UserDto> getFiltered(@RequestParam(name = "ids", required = false) List<Long> users,
+                                     @RequestParam(name = "from", defaultValue = "0") int offset,
                                      @RequestParam(name = "size", defaultValue = "10") int limit) {
-        log.info("GET \"/admin/users?from={}&size={}\"", offset, limit);
+        log.info("GET \"/admin/users?users={}&from={}&size={}\"", users, offset, limit);
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = new OffsetPageable(offset, limit, sort);
-        List<UserDto> userList = userService.getFiltered(pageable);
+        List<UserDto> userList;
+        if (users == null) {
+            userList = userService.getAllFiltered(pageable);
+        } else {
+            userList = userService.getAllByIdInFiltered(users, pageable);
+        }
         log.debug("UserList = " + userList);
         return userList;
     }

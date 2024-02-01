@@ -1,6 +1,8 @@
 package ru.yandex.practicum.eventRequest.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.user.User;
 
@@ -34,5 +36,7 @@ public class EventRequest {
     EventRequestStatus status;
 
     @Column(name = "created")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;
 }

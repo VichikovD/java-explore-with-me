@@ -7,10 +7,8 @@ import java.util.List;
 
 public interface UserServiceAdmin {
     UserDto create(UserDto userDto);
-
     UserDto getById(long userId);
-
-    List<UserDto> getFiltered(Pageable pageable);
-
+    List<UserDto> getAllFiltered(Pageable pageable);
+    List<UserDto> getAllByIdInFiltered(List<Long> users, Pageable pageable);
     void delete(long userId);
 }
