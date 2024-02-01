@@ -37,6 +37,8 @@ public class EventServicePublicImpl implements EventServicePublic {
                 eventList = eventRepository.findAllFilteredStartingFromToday(text, categories, paid, pageable);
             }
         } else {
+            validateStartAndEndTime(rangeStart, rangeEnd);
+
             if (onlyAvailable) {
                 eventList = eventRepository.findAllAvailableFiltered(text, categories, paid, rangeStart, rangeEnd, pageable);
             } else {
@@ -69,5 +71,13 @@ public class EventServicePublicImpl implements EventServicePublic {
         // - информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов.
         // - информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики.
         // В случае, если события с заданным id не найдено, возвращает статус код 404
+    }
+
+    private void validateStartAndEndTime(LocalDateTime start, LocalDateTime end) {
+        if (start != null && end != null) {
+            if (start.isAfter(end)) {
+                throw new IllegalArgumentException("Start can't be after end");
+            }
+        }
     }
 }

@@ -42,16 +42,16 @@ public class EventControllerAdmin {
                                                   @RequestParam(name = "states") List<String> states,
                                                   @RequestParam(name = "categories") List<Long> categories,
                                                   @RequestParam(name = "rangeStart")
-                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                   @RequestParam(name = "rangeEnd")
-                                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                   @RequestParam(name = "from", defaultValue = "0") int offset,
                                                   @RequestParam(name = "size", defaultValue = "10") int limit) {
         log.info("GET \"/admin/events?users={}&={}&={}&={}&={}&={}&={}\"",
                 users, states, categories, rangeStart, rangeEnd, offset, limit);
         Pageable pageable = new OffsetPageable(offset, limit);
         List<PublishState> publishStates = new ArrayList<>();
-        for(String s : states) {
+        for (String s : states) {
             publishStates.add(PublishState.from(s));
         }
         List<EventFullInfoDto> eventFullInfoDtoList = eventServiceAdmin.getFullFiltered(users, publishStates, categories,

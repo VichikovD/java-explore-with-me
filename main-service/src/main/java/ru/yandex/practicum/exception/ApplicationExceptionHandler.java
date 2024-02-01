@@ -35,7 +35,7 @@ public class ApplicationExceptionHandler {
         log.error("Not Found Exception = {}", errorMessage);
         return new ErrorResponse("BAD_REQUEST",
                 "Incorrectly made request.",
-                Arrays.toString(e.getStackTrace()),
+                errorMessage,
                 LocalDateTime.now());
     }
 

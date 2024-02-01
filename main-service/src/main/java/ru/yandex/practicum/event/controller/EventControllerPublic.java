@@ -37,7 +37,6 @@ public class EventControllerPublic {
                                                @RequestParam(name = "size", defaultValue = "10") int limit) {
         log.info("GET \"/events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}\"",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, stringSort, offset, limit);
-        log.debug("SORT NOT FOUND:" + stringSort);
         EventSort eventSort = EventSort.from(stringSort);
         Sort sort;
         if (EventSort.EVENT_DATE.equals(eventSort)) {
@@ -48,6 +47,7 @@ public class EventControllerPublic {
             throw new RuntimeException("Sort not supported");
         }
         Pageable pageable = new OffsetPageable(offset, limit);
+
 
         List<EventShortInfoDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, pageable, sort);

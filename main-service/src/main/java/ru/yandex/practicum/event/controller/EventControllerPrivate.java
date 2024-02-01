@@ -6,12 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.event.model.dto.EventCreateDto;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
-import ru.yandex.practicum.event.model.dto.EventRequestDto;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
+import ru.yandex.practicum.event.model.dto.EventUpdateDto;
 import ru.yandex.practicum.event.service.EventServicePrivate;
 import ru.yandex.practicum.util.OffsetPageable;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -25,11 +27,21 @@ public class EventControllerPrivate {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullInfoDto create(@PathVariable(name = "userId") long initiatorId,
-                                   @RequestBody @Validated EventRequestDto eventRequestDto) {
-        log.info("POST \"/user/{}/events\" Body={}", initiatorId, eventRequestDto);
-        EventFullInfoDto eventToReturn = eventServicePrivate.create(initiatorId, eventRequestDto);
-        log.debug("Event=" + eventToReturn);
+                                   @RequestBody @Validated EventCreateDto eventCreateDto) {
+        log.info("POST \"/user/{}/events\" Body={}", initiatorId, eventCreateDto);
+        EventFullInfoDto eventToReturn = eventServicePrivate.create(initiatorId, eventCreateDto);
+        log.debug("Event created=" + eventToReturn);
         return eventToReturn;
+    }
+
+    @PatchMapping("/{eventId}")
+    public EventFullInfoDto updateAsInitiator(@PathVariable(name = "userId") long initiatorId,
+                                              @PathVariable(name = "eventId") long eventId,
+                                              @RequestBody @Valid EventUpdateDto eventUpdateDto) {
+        log.info("PATCH \"/user/{}/events/{}\" Body={}", initiatorId, eventId, eventUpdateDto);
+        EventFullInfoDto eventFullInfoDto = eventServicePrivate.updateAsInitiator(initiatorId, eventId, eventUpdateDto);
+        log.debug("Event updated=" + eventFullInfoDto);
+        return eventFullInfoDto;
     }
 
     @GetMapping

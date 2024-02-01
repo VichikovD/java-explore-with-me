@@ -51,16 +51,14 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
 
         Location location = eventRequestDto.getLocation();
         if (location != null) {  // а если location.getLocationId() == null запрос просто не найдет Location?
-            Long locationId = location.getLocationId();
-            location = locationRepository.findById(locationId)
-                    .orElseThrow(() -> new NotFoundException("Location with id=" + locationId + " was not found"));
+            location = locationRepository.save(location);
         }
 
         PublishState.StateAction stateAction = eventRequestDto.getStateAction();
         if (stateAction != null) {
             PublishState actualState = event.getState();
             if (stateAction.equals(PublishState.StateAction.PUBLISH_EVENT)) {
-                if (!actualState.equals(PublishState.WAITING)) {
+                if (!actualState.equals(PublishState.PENDING)) {
                     throw new DataIntegrityViolationException("Cannot publish the event because it's not in the right state: " + actualState.name());
                 }
             } else if (stateAction.equals(PublishState.StateAction.REJECT_EVENT)) {
@@ -70,7 +68,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
             }
         }
 
-        EventMapper.updateModelWithRequestDtoNotNullFields(event, eventRequestDto, category, location);
+        EventMapper.updateModelWithRequestAdminDtoNotNullFields(event, eventRequestDto, category, location);
         Event eventUpdated = eventRepository.save(event);
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(eventUpdated);
 

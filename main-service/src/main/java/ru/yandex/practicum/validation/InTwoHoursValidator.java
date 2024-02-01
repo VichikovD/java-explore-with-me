@@ -1,4 +1,4 @@
-package ru.yandex.practicum.event.validation;
+package ru.yandex.practicum.validation;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -9,7 +9,7 @@ public class InTwoHoursValidator implements ConstraintValidator<InTwoHours, Loca
     @Override
     public boolean isValid(LocalDateTime localDateTime, ConstraintValidatorContext constraintValidatorContext) {
         if (localDateTime == null) {
-            return false;
+            return true;
         }
         LocalDateTime inTwoHoursTime = LocalDateTime.now().plusHours(2);
 
