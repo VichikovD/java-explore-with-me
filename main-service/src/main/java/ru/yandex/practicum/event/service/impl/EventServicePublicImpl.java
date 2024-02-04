@@ -27,27 +27,18 @@ public class EventServicePublicImpl implements EventServicePublic {
     final StatisticClient statisticClient;
 
     @Override
-    public List<EventShortInfoDto> getFiltered(String text, List<Long> categories, boolean paid, LocalDateTime rangeStart,
+    public List<EventShortInfoDto> getFiltered(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                LocalDateTime rangeEnd, boolean onlyAvailable, Pageable pageable, Sort sort) {
-        List<Event> eventList;
-        if (rangeStart == null || rangeEnd == null) {
-            if (onlyAvailable) {
-                eventList = eventRepository.findAllAvailableFilteredStartingFromToday(text, categories, paid, pageable);
-            } else {
-                eventList = eventRepository.findAllFilteredStartingFromToday(text, categories, paid, pageable);
-            }
-        } else {
-            validateStartAndEndTime(rangeStart, rangeEnd);
+        validateStartAndEndTime(rangeStart, rangeEnd);
 
-            if (onlyAvailable) {
-                eventList = eventRepository.findAllAvailableFiltered(text, categories, paid, rangeStart, rangeEnd, pageable);
-            } else {
-                eventList = eventRepository.findAllFiltered(text, categories, paid, rangeStart, rangeEnd, pageable);
-            }
+        List<Event> eventList;
+        if (onlyAvailable) {
+            eventList = eventRepository.findAllAvailableFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
+        } else {
+            eventList = eventRepository.findAllFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
         }
 
-        // eventList + confirmedRequests + views
-        // + sorting as requested
+        // TODO eventList + confirmedRequests + views + sorting as requested
         return EventMapper.modelListToShortInfoDtoList(eventList);
 
         //Обратите внимание: \n- это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
@@ -19,15 +20,16 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/events")
+@Validated
 public class EventControllerAdmin {
     final EventServiceAdmin eventServiceAdmin;
 
     @PatchMapping("/{eventId}")
     public EventFullInfoDto updateAsAdmin(@PathVariable(name = "eventId") long eventId,
-                                          @RequestBody EventRequestAdminDto eventRequestDto) {
+                                          @RequestBody @Validated EventRequestAdminDto eventRequestDto) {
         log.info("PATCH \"/admin/events/{}\" Body={}", eventId, eventRequestDto);
         EventFullInfoDto eventFullInfoDto = eventServiceAdmin.updateAsAdmin(eventId, eventRequestDto);
-        log.debug("EventFullInfoDtoList=" + eventFullInfoDto);
+        log.debug("Event updated=" + eventFullInfoDto);
         return eventFullInfoDto;
     }
 
@@ -38,25 +40,31 @@ public class EventControllerAdmin {
     // дата и время не позже которых должно произойти  событие
     // количество событий, которые нужно пропустить для формирования текущего набора
     @GetMapping
-    public List<EventFullInfoDto> getFullFiltered(@RequestParam(name = "users") List<Long> users,
-                                                  @RequestParam(name = "states") List<String> states,
-                                                  @RequestParam(name = "categories") List<Long> categories,
-                                                  @RequestParam(name = "rangeStart")
-                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                                  @RequestParam(name = "rangeEnd")
-                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                  @RequestParam(name = "from", defaultValue = "0") int offset,
-                                                  @RequestParam(name = "size", defaultValue = "10") int limit) {
-        log.info("GET \"/admin/events?users={}&={}&={}&={}&={}&={}&={}\"",
+    public List<EventFullInfoDto> findAllFilteredAsAdmin(@RequestParam(name = "users", required = false) List<Long> users,
+                                                         @RequestParam(name = "states", required = false) List<String> states,
+                                                         @RequestParam(name = "categories", required = false) List<Long> categories,
+                                                         @RequestParam(name = "rangeStart", required = false)
+                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                         @RequestParam(name = "rangeEnd", required = false)
+                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                         @RequestParam(name = "from", defaultValue = "0") int offset,
+                                                         @RequestParam(name = "size", defaultValue = "10") int limit) {
+        log.info("GET \"/admin/events?users={}&states={}&categories={}&rangeStart={}&rangeEnd={}&from={}&size={}\"",
                 users, states, categories, rangeStart, rangeEnd, offset, limit);
         Pageable pageable = new OffsetPageable(offset, limit);
-        List<PublishState> publishStates = new ArrayList<>();
-        for (String s : states) {
-            publishStates.add(PublishState.from(s));
+
+        List<PublishState> publishStates = null;
+        if (states != null) {
+            publishStates = new ArrayList<>();
+            for (String s : states) {
+                publishStates.add(PublishState.from(s));
+            }
         }
-        List<EventFullInfoDto> eventFullInfoDtoList = eventServiceAdmin.getFullFiltered(users, publishStates, categories,
+
+        List<EventFullInfoDto> eventFullInfoDtoList = eventServiceAdmin.findAllFilteredAsAdmin(users, publishStates, categories,
                 rangeStart, rangeEnd, pageable);
-        log.debug("EventFullInfoDtoList=" + eventFullInfoDtoList);
+
+        log.debug("Event found=" + eventFullInfoDtoList);
         return eventFullInfoDtoList;
     }
 }

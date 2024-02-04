@@ -11,6 +11,6 @@ import java.util.List;
 public interface EventServiceAdmin {
     EventFullInfoDto updateAsAdmin(long eventId, EventRequestAdminDto eventRequestDto);
 
-    List<EventFullInfoDto> getFullFiltered(List<Long> users, List<PublishState> publishStates, List<Long> categories,
-                                           LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    List<EventFullInfoDto> findAllFilteredAsAdmin(List<Long> users, List<PublishState> publishStates, List<Long> categories,
+                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

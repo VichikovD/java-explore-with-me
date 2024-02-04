@@ -24,9 +24,9 @@ public class EventControllerPublic {
     final EventServicePublic eventService;
 
     @GetMapping
-    public List<EventShortInfoDto> getFiltered(@RequestParam(name = "text") String text,
-                                               @RequestParam(name = "categories") List<Long> categories,
-                                               @RequestParam(name = "paid") boolean paid,
+    public List<EventShortInfoDto> getFiltered(@RequestParam(name = "text", required = false) String text,
+                                               @RequestParam(name = "categories", required = false) List<Long> categories,
+                                               @RequestParam(name = "paid", required = false) Boolean paid,
                                                @RequestParam(name = "rangeStart", required = false)
                                                @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                @RequestParam(name = "rangeEnd", required = false)
@@ -51,7 +51,7 @@ public class EventControllerPublic {
 
         List<EventShortInfoDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, pageable, sort);
-        log.debug("EventList = " + eventList);
+        log.debug("EventList found= " + eventList);
         return eventList;
     }
 
@@ -64,7 +64,7 @@ public class EventControllerPublic {
         log.info("GET \"/events/{} Address={}, URI={}", eventId, address, uri);
 
         EventFullInfoDto event = eventService.getPublishedById(eventId, address, uri);
-        log.debug("Event = " + event);
+        log.debug("Event found= " + event);
         return event;
     }
 }

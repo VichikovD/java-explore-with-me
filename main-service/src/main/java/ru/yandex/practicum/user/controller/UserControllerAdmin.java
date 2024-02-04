@@ -26,7 +26,7 @@ public class UserControllerAdmin {
     public UserDto create(@RequestBody @Validated UserDto userDto) {
         log.info("POST \"/admin/users\" Body={}", userDto);
         UserDto userToReturn = userService.create(userDto);
-        log.debug("Created user=" + userToReturn);
+        log.debug("User created=" + userToReturn);
         return userToReturn;
     }
 
@@ -34,7 +34,7 @@ public class UserControllerAdmin {
     public UserDto getById(@PathVariable(name = "userId") long userId) {
         log.info("GET \"/admin/users/{}", userId);
         UserDto user = userService.getById(userId);
-        log.debug("user = " + user);
+        log.debug("User found= " + user);
         return user;
     }
 
@@ -51,7 +51,7 @@ public class UserControllerAdmin {
         } else {
             userList = userService.getAllByIdInFiltered(users, pageable);
         }
-        log.debug("UserList = " + userList);
+        log.debug("UserList found= " + userList);
         return userList;
     }
 
@@ -60,6 +60,6 @@ public class UserControllerAdmin {
     public void delete(@PathVariable(name = "userId") long userId) {
         log.info("DELETE \"/admin/users/{}\"", userId);
         userService.delete(userId);
-        log.debug("Deleted user with id=" + userId);
+        log.debug("User deleted with id=" + userId);
     }
 }

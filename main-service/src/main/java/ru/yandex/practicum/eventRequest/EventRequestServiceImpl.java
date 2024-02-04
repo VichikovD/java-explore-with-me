@@ -30,7 +30,6 @@ public class EventRequestServiceImpl implements EventRequestService {
                 .orElseThrow(() -> new NotFoundException("User with id=" + requesterId + " was not found"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-
         if (event.getInitiator().getId().equals(requesterId)) {
             throw new DataIntegrityViolationException("Initiator can't create request for his own event");
         }
@@ -39,7 +38,7 @@ public class EventRequestServiceImpl implements EventRequestService {
         }
         long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
         long participantLimit = event.getParticipantLimit();
-        if (confirmedRequests >= participantLimit) {
+        if ((confirmedRequests >= participantLimit) && participantLimit > 0) {
             throw new DataIntegrityViolationException("Participant limit (" + participantLimit + ") is reached");
         }
 
@@ -48,10 +47,22 @@ public class EventRequestServiceImpl implements EventRequestService {
                 .requester(requester)
                 .created(LocalDateTime.now())
                 .build();
-        if (event.isRequestModeration()) {
-            eventRequestToSave.setStatus(EventRequestStatus.PENDING);
-        } else {
+
+        /*long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
+        long participantLimit = event.getParticipantLimit();
+        boolean isRequestModeration = event.isRequestModeration();
+        if (!isRequestModeration || participantLimit == 0) {
             eventRequestToSave.setStatus(EventRequestStatus.CONFIRMED);
+        } else if (confirmedRequests >= participantLimit) {
+            throw new DataIntegrityViolationException("Participant limit (" + participantLimit + ") is reached");
+        } else {
+            eventRequestToSave.setStatus(EventRequestStatus.PENDING);
+        }*/
+
+        if (!event.isRequestModeration() || participantLimit == 0) {
+            eventRequestToSave.setStatus(EventRequestStatus.CONFIRMED);
+        } else {
+            eventRequestToSave.setStatus(EventRequestStatus.PENDING);
         }
         EventRequest eventRequestSaved = eventRequestRepository.save(eventRequestToSave);
         return EventRequestMapper.toInfoDto(eventRequestSaved);

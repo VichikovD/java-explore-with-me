@@ -11,9 +11,11 @@ import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
 import ru.yandex.practicum.event.model.dto.EventUpdateDto;
 import ru.yandex.practicum.event.service.EventServicePrivate;
+import ru.yandex.practicum.eventRequest.model.EventRequestInfoDto;
+import ru.yandex.practicum.eventRequest.model.EventRequestStatusChanger;
+import ru.yandex.practicum.eventRequest.model.EventRequestStatusResult;
 import ru.yandex.practicum.util.OffsetPageable;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +39,7 @@ public class EventControllerPrivate {
     @PatchMapping("/{eventId}")
     public EventFullInfoDto updateAsInitiator(@PathVariable(name = "userId") long initiatorId,
                                               @PathVariable(name = "eventId") long eventId,
-                                              @RequestBody @Valid EventUpdateDto eventUpdateDto) {
+                                              @RequestBody @Validated EventUpdateDto eventUpdateDto) {
         log.info("PATCH \"/user/{}/events/{}\" Body={}", initiatorId, eventId, eventUpdateDto);
         EventFullInfoDto eventFullInfoDto = eventServicePrivate.updateAsInitiator(initiatorId, eventId, eventUpdateDto);
         log.debug("Event updated=" + eventFullInfoDto);
@@ -51,7 +53,7 @@ public class EventControllerPrivate {
         log.info("GET \"/user/{}/events&from={}&size={}\"", initiatorId, offset, limit);
         Pageable pageable = new OffsetPageable(offset, limit);
         List<EventShortInfoDto> eventList = eventServicePrivate.getByInitiatorIdFiltered(initiatorId, pageable);
-        log.debug("EventList=" + eventList);
+        log.debug("EventList found=" + eventList);
         return eventList;
     }
 
@@ -60,7 +62,27 @@ public class EventControllerPrivate {
                                                   @PathVariable(name = "eventId") long eventId) {
         log.info("GET \"/user/{}/events/{}", initiatorId, eventId);
         EventFullInfoDto event = eventServicePrivate.getByIdAndInitiatorId(initiatorId, eventId);
-        log.debug("event=" + event);
+        log.debug("Event found=" + event);
         return event;
+    }
+
+    @GetMapping("/{eventId}/requests")
+    public List<EventRequestInfoDto> getEventRequestsByInitiatorIdAndEventId(@PathVariable(name = "userId") long initiatorId,
+                                                                             @PathVariable(name = "eventId") long eventId) {
+        log.info("GET \"/user/{}/events/{}/requests", initiatorId, eventId);
+        List<EventRequestInfoDto> eventRequestList = eventServicePrivate.getEventRequestsByInitiatorIdAndEventId(initiatorId, eventId);
+        log.debug("EventRequestList found=" + eventRequestList);
+        return eventRequestList;
+    }
+
+
+    @PatchMapping("/{eventId}/requests")
+    public EventRequestStatusResult updateEventRequestsAsInitiator(@PathVariable(name = "userId") long initiatorId,
+                                                                   @PathVariable(name = "eventId") long eventId,
+                                                                   @RequestBody EventRequestStatusChanger eventRequestStatusChanger) {
+        log.info("PATCH \"/user/{}/events/{}/requests Body={}", initiatorId, eventId, eventRequestStatusChanger);
+        EventRequestStatusResult eventRequestList = eventServicePrivate.updateEventRequestsAsInitiator(initiatorId, eventId, eventRequestStatusChanger);
+        log.debug("EventRequestList found=" + eventRequestList);
+        return eventRequestList;
     }
 }

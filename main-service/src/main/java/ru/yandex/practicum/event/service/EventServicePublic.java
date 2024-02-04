@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public interface EventServicePublic {
-    List<EventShortInfoDto> getFiltered(String text, List<Long> categories, boolean paid, LocalDateTime rangeStart,
+    List<EventShortInfoDto> getFiltered(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd, boolean onlyAvailable, Pageable pageable, Sort sort);
 
     EventFullInfoDto getPublishedById(int eventId, String address, String uri);

@@ -79,13 +79,11 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     }
 
     @Override
-    public List<EventFullInfoDto> getFullFiltered(List<Long> users, List<PublishState> states, List<Long> categories,
-                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
-        List<Event> eventList =
-                eventRepository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
-                        users, states, categories, rangeStart, rangeEnd, pageable);
+    public List<EventFullInfoDto> findAllFilteredAsAdmin(List<Long> users, List<PublishState> states, List<Long> categories,
+                                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
+        List<Event> eventList = eventRepository.findAllFilteredAsAdmin(users, states, categories, rangeStart, rangeEnd, pageable);
         List<EventFullInfoDto> eventFullInfoDtoList = EventMapper.modelListToFullInfoDtoList(eventList);
-        // eventFullInfoDtoList + confirmedRequests + views TO DO
+        // TODO eventFullInfoDtoList + confirmedRequests + views TODO
         return eventFullInfoDtoList;
     }
 }

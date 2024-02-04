@@ -19,7 +19,7 @@ public class EventRequestControllerPrivate {
     @ResponseStatus(HttpStatus.CREATED)
     public EventRequestInfoDto create(@PathVariable(name = "userId") long requesterId,
                                       @RequestParam(name = "eventId") long eventId) {
-        log.info("POST \"/users/{}/requests\" eventId={}", requesterId, eventId);
+        log.info("POST \"/users/{}/requests?eventId={}\"", requesterId, eventId);
         EventRequestInfoDto eventRequestInfoDto = eventRequestService.create(requesterId, eventId);
         log.debug("EventRequestInfoDto=" + eventRequestInfoDto);
         return eventRequestInfoDto;

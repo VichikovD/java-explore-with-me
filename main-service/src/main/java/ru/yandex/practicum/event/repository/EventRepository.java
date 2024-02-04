@@ -19,11 +19,75 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Optional<Event> findByIdAndState(long eventId, PublishState state);
 
-    List<Event> findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
-            Collection<Long> users, Collection<PublishState> state, Collection<Long> categories,
-            LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    @Query(value = "SELECT e " +
+            "FROM Event AS e " +
+            "JOIN FETCH e.category AS c " +
+            "JOIN FETCH e.initiator AS i " +
+            "JOIN FETCH e.location AS l " +
+            "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
+            "AND (:states IS NULL OR e.state IN :states) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "AND (" +
+            "cast(:rangeStart AS timestamp) IS NULL " +
+            "OR cast(:rangeEnd AS timestamp) IS NULL " +
+            "OR (e.eventDate BETWEEN :rangeStart AND :rangeEnd)" +
+            ")")
+    List<Event> findAllFilteredAsAdmin(Collection<Long> users, Collection<PublishState> states, Collection<Long> categories,
+                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
     @Query(value = "SELECT * " +
+            "FROM events AS e " +
+            "LEFT JOIN categories AS c ON e.category_id = c.category_id " +
+            "LEFT JOIN users AS u ON e.initiator_id = u.user_id " +
+            "LEFT JOIN event_requests AS er ON er.event_id = e.event_id " +
+            //        "JOIN FETCH e.location " +
+            "WHERE (" +
+            ":text IS NULL " +
+            "OR (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', :text, '%'))) OR LOWER(e.description) LIKE(LOWER(CONCAT('%', :text, '%'))))" +
+            ") " +
+            "AND (:categories IS NULL OR e.category_id IN :categories) " +
+            "AND (:paid IS NULL OR e.paid = :paid) " +
+            "AND (" +
+            "(cast(:rangeStart AS timestamp) IS NULL OR cast(:rangeEnd AS timestamp) IS NULL OR (e.event_date BETWEEN :rangeStart AND :rangeEnd))" +
+            "OR ((cast(:rangeStart AS timestamp) IS NULL OR cast(:rangeEnd AS timestamp) IS NULL) AND e.event_date > NOW())" +
+            ") " +
+            "AND (e.state = 'PUBLISHED') " +
+            "AND (er.status = 'CONFIRMED') " +
+            "GROUP BY e.event_id " +
+            "HAVING COUNT(er.event_id) < e.participant_limit", nativeQuery = true)
+    List<Event> findAllAvailableFilteredAsUser(
+            @Param("text") String text,
+            @Param("categories") Collection<Long> categories,
+            @Param("paid") Boolean paid,
+            @Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd,
+            Pageable pageable);
+
+    @Query(value = "SELECT * " +
+            "FROM events AS e " +
+            "LEFT JOIN categories AS c ON e.category_id = c.category_id " +
+            "LEFT JOIN users AS u ON e.initiator_id = u.user_id " +
+            //        "JOIN FETCH e.location " +
+            "WHERE (" +
+            ":text IS NULL " +
+            "OR (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', :text, '%'))) OR LOWER(e.description) LIKE(LOWER(CONCAT('%', :text, '%'))))" +
+            ") " +
+            "AND (:categories IS NULL OR e.category_id IN :categories) " +
+            "AND (:paid IS NULL OR e.paid = :paid) " +
+            "AND (" +
+            "(cast(:rangeStart AS timestamp) IS NULL OR cast(:rangeEnd AS timestamp) IS NULL OR (e.event_date BETWEEN :rangeStart AND :rangeEnd))" +
+            "OR ((cast(:rangeStart AS timestamp) IS NULL OR cast(:rangeEnd AS timestamp) IS NULL) AND e.event_date > NOW())" +
+            ") " +
+            "AND (e.state = 'PUBLISHED') ", nativeQuery = true)
+    List<Event> findAllFilteredAsUser(
+            @Param("text") String text,
+            @Param("categories") Collection<Long> categories,
+            @Param("paid") Boolean paid,
+            @Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd,
+            Pageable pageable);
+
+    /*@Query(value = "SELECT * " +
             "FROM events AS e " +
             "LEFT JOIN categories AS c ON e.category_id = c.category_id " +
             "LEFT JOIN users AS u ON e.initiator_id = u.user_id " +
@@ -65,30 +129,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "FROM events AS e " +
             "LEFT JOIN categories AS c ON e.category_id = c.category_id " +
             "LEFT JOIN users AS u ON e.initiator_id = u.user_id " +
-            "LEFT JOIN event_requests AS er ON er.event_id = e.event_id " +
-            //        "JOIN FETCH e.location " +
-            "WHERE (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', :text, '%'))) OR " +
-            "LOWER(e.description) LIKE(LOWER(CONCAT('%', :text, '%')))) AND " +
-            "(e.category_id IN :categories) AND " +
-            "(e.paid = :paid) AND " +
-            "(e.event_date > :rangeStart) AND " +
-            "(e.event_date < :rangeEnd) AND " +
-            "(e.state = 'PUBLISHED') " +
-            "(er.status = 'CONFIRMED') " +
-            "GROUP BY e.event_id " +
-            "HAVING COUNT(er.event_id) < e.participant_limit", nativeQuery = true)
-    List<Event> findAllAvailableFiltered(
-            @Param("text") String text,
-            @Param("categories") Collection<Long> categories,
-            @Param("paid") boolean paid,
-            @Param("rangeStart") LocalDateTime rangeStart,
-            @Param("rangeEnd") LocalDateTime rangeEnd,
-            Pageable pageable);
-
-    @Query(value = "SELECT * " +
-            "FROM events AS e " +
-            "LEFT JOIN categories AS c ON e.category_id = c.category_id " +
-            "LEFT JOIN users AS u ON e.initiator_id = u.user_id " +
             //        "JOIN FETCH e.location " +
             "WHERE (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', :text, '%'))) OR " +
             "LOWER(e.description) LIKE(LOWER(CONCAT('%', :text, '%')))) AND " +
@@ -97,31 +137,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "(e.event_date > :rangeStart) AND " +
             "(e.event_date < :rangeEnd) AND " +
             "(e.state = 'PUBLISHED') ", nativeQuery = true)
-    List<Event> findAllFiltered(
+    List<Event> findAllFilteredAsAdmin(
             @Param("text") String text,
             @Param("categories") Collection<Long> categories,
             @Param("paid") boolean paid,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
-            Pageable pageable);
-
-    /*
-            "SELECT b " +
-            "FROM Booking AS b " +
-            "JOIN FETCH b.item " +
-            "JOIN FETCH b.booker " +
-            "WHERE b.id = ?1 AND (b.item.owner.id = ?2 OR b.booker.id = ?2)"
-    */
-
-    // -------------------------
-
-    /*
-    String text,
-    int[] categories,
-    boolean paid,
-    String rangeStart,
-    String rangeEnd,
-    boolean onlyAvailable,
-    Pageable pageable
-                                              */
+            Pageable pageable);*/
 }
