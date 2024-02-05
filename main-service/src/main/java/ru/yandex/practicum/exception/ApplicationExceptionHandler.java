@@ -8,6 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,6 +26,17 @@ public class ApplicationExceptionHandler {
         return new ErrorResponse("BAD_REQUEST",
                 "Incorrectly made request.",
                 e.getFieldError().getDefaultMessage() + " Value: " + e.getFieldError().getRejectedValue(),
+                LocalDateTime.now());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleNotFoundException(MethodArgumentTypeMismatchException e) {
+        String errorMessage = e.getMessage();
+        log.error("Not Found Exception = {}", errorMessage);
+        return new ErrorResponse("BAD_REQUEST",
+                "Incorrectly made request.",
+                errorMessage,
                 LocalDateTime.now());
     }
 
