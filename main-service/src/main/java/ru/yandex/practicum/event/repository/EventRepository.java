@@ -11,8 +11,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+    Set<Event> findAllByIdIn(Collection<Long> idCollection);
+
     List<Event> findAllByInitiatorId(long initiatorId, Pageable pageable);
 
     Optional<Event> findByIdAndInitiatorId(long initiatorId, long eventId);
@@ -137,7 +140,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "(e.event_date > :rangeStart) AND " +
             "(e.event_date < :rangeEnd) AND " +
             "(e.state = 'PUBLISHED') ", nativeQuery = true)
-    List<Event> findAllFilteredAsAdmin(
+    List<Event> findAllFiltered(
             @Param("text") String text,
             @Param("categories") Collection<Long> categories,
             @Param("paid") boolean paid,

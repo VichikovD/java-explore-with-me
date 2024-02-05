@@ -94,7 +94,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
             }
         }
 
-        EventMapper.updateModelWithRequestAdminDtoNotNullFields(event, eventUpdateDto, category, location);
+        EventMapper.updateModelWithUpdateDtoNotNullFields(event, eventUpdateDto, category, location);
         Event eventUpdated = eventRepository.save(event);
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(eventUpdated);
 
@@ -240,7 +240,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
     private void rejectAllPendingRequests() {
         List<EventRequest> requests = eventRequestRepository.findAllByStatus(EventRequestStatus.PENDING);
-        for (EventRequest request: requests) {
+        for (EventRequest request : requests) {
             request.setStatus(EventRequestStatus.REJECTED);
         }
         eventRequestRepository.saveAll(requests);

@@ -11,7 +11,9 @@ import ru.yandex.practicum.user.UserMapper;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EventMapper {
     public static EventFullInfoDto toFullInfoDto(Event event) {
@@ -79,7 +81,15 @@ public class EventMapper {
         return dtoList;
     }
 
-    public static void updateModelWithRequestAdminDtoNotNullFields(Event event, EventRequestAdminDto eventRequestDto, Category category, Location location) {
+    public static Set<EventShortInfoDto> modelSetToShortInfoDtoSet(Set<Event> eventSet) {
+        Set<EventShortInfoDto> infoDtoSet = new HashSet<>();
+        for (Event event : eventSet) {
+            infoDtoSet.add(toShortInfoDto(event));
+        }
+        return infoDtoSet;
+    }
+
+    public static void updateModelWithUpdateDtoNotNullFields(Event event, EventRequestAdminDto eventRequestDto, Category category, Location location) {
         String annotation = eventRequestDto.getAnnotation();
         if (annotation != null) {
             event.setAnnotation(annotation);
@@ -130,7 +140,7 @@ public class EventMapper {
         }
     }
 
-    public static void updateModelWithRequestAdminDtoNotNullFields(Event event, EventUpdateDto eventRequestDto, Category category, Location location) {
+    public static void updateModelWithUpdateDtoNotNullFields(Event event, EventUpdateDto eventRequestDto, Category category, Location location) {
         String annotation = eventRequestDto.getAnnotation();
         if (annotation != null) {
             event.setAnnotation(annotation);

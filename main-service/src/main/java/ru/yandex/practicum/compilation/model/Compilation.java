@@ -1,4 +1,4 @@
-package ru.yandex.practicum.compilation;
+package ru.yandex.practicum.compilation.model;
 
 import lombok.*;
 import ru.yandex.practicum.event.model.Event;
@@ -8,6 +8,7 @@ import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Getter
 @Setter
 @Builder

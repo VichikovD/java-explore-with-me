@@ -68,13 +68,13 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
             }
         }
 
-        EventMapper.updateModelWithRequestAdminDtoNotNullFields(event, eventRequestDto, category, location);
+        EventMapper.updateModelWithUpdateDtoNotNullFields(event, eventRequestDto, category, location);
         Event eventUpdated = eventRepository.save(event);
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(eventUpdated);
 
         long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
         eventFullInfoDto.setConfirmedRequests(confirmedRequests);
-        // setViews TO DO
+        // TODO setViews + sort
         return eventFullInfoDto;
     }
 
@@ -83,7 +83,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                                                          LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
         List<Event> eventList = eventRepository.findAllFilteredAsAdmin(users, states, categories, rangeStart, rangeEnd, pageable);
         List<EventFullInfoDto> eventFullInfoDtoList = EventMapper.modelListToFullInfoDtoList(eventList);
-        // TODO eventFullInfoDtoList + confirmedRequests + views TODO
+        // TODO eventFullInfoDtoList + confirmedRequests + views TODO + sort
         return eventFullInfoDtoList;
     }
 }
