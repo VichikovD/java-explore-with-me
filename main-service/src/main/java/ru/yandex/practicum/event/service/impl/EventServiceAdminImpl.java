@@ -18,6 +18,8 @@ import ru.yandex.practicum.event.service.EventServiceAdmin;
 import ru.yandex.practicum.eventRequest.EventRequestRepository;
 import ru.yandex.practicum.eventRequest.model.EventRequestStatus;
 import ru.yandex.practicum.exception.NotFoundException;
+import ru.yandex.practicum.util.EventRequestsManager;
+import ru.yandex.practicum.util.StatisticsManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +31,8 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
     final CategoryRepository categoryRepository;
     final LocationRepository locationRepository;
     final EventRequestRepository eventRequestRepository;
+    final StatisticsManager statisticsManager;
+    final EventRequestsManager eventRequestsManager;
 
     @Override
     public EventFullInfoDto updateAsAdmin(long eventId, EventRequestAdminDto eventRequestDto) {
@@ -74,7 +78,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
 
         long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
         eventFullInfoDto.setConfirmedRequests(confirmedRequests);
-        // TODO setViews + sort
+        statisticsManager.updateViewsToFullInfoDtos(List.of(eventFullInfoDto));
         return eventFullInfoDto;
     }
 
@@ -83,7 +87,9 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                                                          LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
         List<Event> eventList = eventRepository.findAllFilteredAsAdmin(users, states, categories, rangeStart, rangeEnd, pageable);
         List<EventFullInfoDto> eventFullInfoDtoList = EventMapper.modelListToFullInfoDtoList(eventList);
-        // TODO eventFullInfoDtoList + confirmedRequests + views TODO + sort
+        statisticsManager.updateViewsToFullInfoDtos(eventFullInfoDtoList);
+        eventRequestsManager.updateConfirmedRequestsToFullDtos(eventFullInfoDtoList);
+        eventRequestsManager.updateConfirmedRequestsToFullDtos(eventFullInfoDtoList);
         return eventFullInfoDtoList;
     }
 }

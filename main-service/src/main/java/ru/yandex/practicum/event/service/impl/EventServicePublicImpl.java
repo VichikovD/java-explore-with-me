@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.StatisticClient;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
@@ -15,7 +14,10 @@ import ru.yandex.practicum.event.service.EventServicePublic;
 import ru.yandex.practicum.eventRequest.EventRequestRepository;
 import ru.yandex.practicum.eventRequest.model.EventRequestStatus;
 import ru.yandex.practicum.exception.NotFoundException;
+import ru.yandex.practicum.util.EventRequestsManager;
+import ru.yandex.practicum.util.StatisticsManager;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,11 +26,13 @@ import java.util.List;
 public class EventServicePublicImpl implements EventServicePublic {
     final EventRepository eventRepository;
     final EventRequestRepository eventRequestRepository;
-    final StatisticClient statisticClient;
+    final StatisticsManager statisticsManager;
+    final EventRequestsManager eventRequestsManager;
 
     @Override
     public List<EventShortInfoDto> getFiltered(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                               LocalDateTime rangeEnd, boolean onlyAvailable, Pageable pageable, Sort sort) {
+                                               LocalDateTime rangeEnd, boolean onlyAvailable, Pageable pageable, Sort sort,
+                                               HttpServletRequest request) {
         validateStartAndEndTime(rangeStart, rangeEnd);
 
         List<Event> eventList;
@@ -38,8 +42,12 @@ public class EventServicePublicImpl implements EventServicePublic {
             eventList = eventRepository.findAllFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
         }
 
-        // TODO eventList + confirmedRequests + views + sorting as requested
-        return EventMapper.modelListToShortInfoDtoList(eventList);
+        List<EventShortInfoDto> eventShortInfoDtoList = EventMapper.modelListToShortInfoDtoList(eventList);
+
+        eventRequestsManager.updateConfirmedRequestsToShortDtos(eventShortInfoDtoList);
+        statisticsManager.updateViewsToShortInfoDtos(eventShortInfoDtoList);
+        statisticsManager.sendStatistic(request);
+        return eventShortInfoDtoList;
 
         //Обратите внимание: \n- это публичный эндпоинт, соответственно в выдаче должны быть только опубликованные события
         // - текстовый поиск (по аннотации и подробному описанию) должен быть без учета регистра букв
@@ -50,18 +58,14 @@ public class EventServicePublicImpl implements EventServicePublic {
     }
 
     @Override
-    public EventFullInfoDto getPublishedById(int eventId, String address, String uri) {
+    public EventFullInfoDto getPublishedById(int eventId, HttpServletRequest request) {
         Event event = eventRepository.findByIdAndState(eventId, PublishState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(event);
         eventFullInfoDto.setConfirmedRequests(eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED));
-        //  statistic recording TODO
+        statisticsManager.updateViewsToFullInfoDtos(List.of(eventFullInfoDto));
+        statisticsManager.sendStatistic(request);
         return eventFullInfoDto;
-        // Обратите внимание:
-        // - событие должно быть опубликовано.
-        // - информация о событии должна включать в себя количество просмотров и количество подтвержденных запросов.
-        // - информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики.
-        // В случае, если события с заданным id не найдено, возвращает статус код 404
     }
 
     private void validateStartAndEndTime(LocalDateTime start, LocalDateTime end) {

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.StatisticClient;
 import ru.yandex.practicum.category.Category;
 import ru.yandex.practicum.category.CategoryRepository;
 import ru.yandex.practicum.event.model.Event;
@@ -23,6 +22,8 @@ import ru.yandex.practicum.eventRequest.model.*;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserRepository;
+import ru.yandex.practicum.util.EventRequestsManager;
+import ru.yandex.practicum.util.StatisticsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,8 @@ public class EventServicePrivateImpl implements EventServicePrivate {
     final UserRepository userRepository;
     final CategoryRepository categoryRepository;
     final LocationRepository locationRepository;
-    final StatisticClient statisticClient;
+    final StatisticsManager statisticsManager;
+    final EventRequestsManager eventRequestsManager;
 
     @Override
     public EventFullInfoDto create(long initiatorId, EventCreateDto eventCreateDto) {
@@ -55,7 +57,6 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         Event eventCreated = eventRepository.save(eventToCreate);
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(eventCreated);
 
-        // eventFullInfoDto + views + (confirmedRequests and if limit reached -> rest requests rejected!)
         eventFullInfoDto.setConfirmedRequests(0);
         eventFullInfoDto.setViews(0);
         return eventFullInfoDto;
@@ -100,7 +101,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
         long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
         eventFullInfoDto.setConfirmedRequests(confirmedRequests);
-        // setViews TODO
+        statisticsManager.updateViewsToFullInfoDtos(List.of(eventFullInfoDto));
         return eventFullInfoDto;
     }
 
@@ -113,11 +114,8 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
         List<Event> eventList = eventRepository.findAllByInitiatorId(initiatorId, pageable);
         List<EventShortInfoDto> eventShortInfoDtoList = EventMapper.modelListToShortInfoDtoList(eventList);
-        // Всем событиям добавить просмотры и подтвержденные запросы на участие \/
-        /*
-        setConfirmedRequestsToAll(eventShortInfoDtoList);
-        setViewsToAll(eventShortInfoDtoList); TODO
-        */
+        statisticsManager.updateViewsToShortInfoDtos(eventShortInfoDtoList);
+        eventRequestsManager.updateConfirmedRequestsToShortDtos(eventShortInfoDtoList);
         return eventShortInfoDtoList;
     }
 
@@ -129,11 +127,8 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
         long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
         eventFullInfoDto.setConfirmedRequests(confirmedRequests);
-        eventFullInfoDto.setViews(-1); /*TODO*/
+        statisticsManager.updateViewsToFullInfoDtos(List.of(eventFullInfoDto));
         return eventFullInfoDto;
-        // Обратите внимание:\n- событие должно быть опубликовано - информация о событии должна включать в себя
-        // количество просмотров и количество подтвержденных запросов - информацию о том, что по этому эндпоинту был осуществлен
-        // и обработан запрос, нужно сохранить в сервисе статистики В случае, если события с заданным id не найдено, возвращает статус код 404
     }
 
     @Override
@@ -222,18 +217,6 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         } else {
             requestStatusResult.addAllRejected(savedRequestDtoList);
         }
-        /*List<EventRequestStatus> confirmAndRejectStatusList = List.of(EventRequestStatus.CONFIRMED, EventRequestStatus.REJECTED);
-        List<EventRequest> confirmedAndRejectedRequestList = eventRequestRepository.findAllByStatusIn(confirmAndRejectStatusList);
-        List<EventRequestInfoDto> confirmedAndRejectedRequestDtoList = EventRequestMapper.listModelToListInfoDto(confirmedAndRejectedRequestList);
-
-        EventRequestStatusResult eventRequestStatusResult = new EventRequestStatusResult();
-        for (EventRequestInfoDto dto : confirmedAndRejectedRequestDtoList) {
-            if (dto.getStatus().equals(EventRequestStatus.REJECTED)) {
-                eventRequestStatusResult.addRejected(dto);
-            } else {
-                eventRequestStatusResult.addConfirmed(dto);
-            }
-        }*/
 
         return requestStatusResult;
     }

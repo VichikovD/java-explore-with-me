@@ -34,9 +34,11 @@ public class EventControllerPublic {
                                                @RequestParam(name = "onlyAvailable", defaultValue = "false") boolean onlyAvailable,
                                                @RequestParam(name = "sort", defaultValue = "EVENT_DATE") String stringSort,
                                                @RequestParam(name = "from", defaultValue = "0") int offset,
-                                               @RequestParam(name = "size", defaultValue = "10") int limit) {
-        log.info("GET \"/events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}\"",
-                text, categories, paid, rangeStart, rangeEnd, onlyAvailable, stringSort, offset, limit);
+                                               @RequestParam(name = "size", defaultValue = "10") int limit,
+                                               HttpServletRequest request) {
+        log.info("GET \"/events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}\" " +
+                        "Address={}, URI={}", text, categories, paid, rangeStart, rangeEnd, onlyAvailable, stringSort,
+                offset, limit, request.getRemoteAddr(), request.getRequestURI());
         EventSort eventSort = EventSort.from(stringSort);
         Sort sort;
         if (EventSort.EVENT_DATE.equals(eventSort)) {
@@ -50,7 +52,7 @@ public class EventControllerPublic {
 
 
         List<EventShortInfoDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd,
-                onlyAvailable, pageable, sort);
+                onlyAvailable, pageable, sort, request);
         log.debug("EventList found= " + eventList);
         return eventList;
     }
@@ -63,7 +65,7 @@ public class EventControllerPublic {
         String uri = request.getRequestURI();
         log.info("GET \"/events/{} Address={}, URI={}", eventId, address, uri);
 
-        EventFullInfoDto event = eventService.getPublishedById(eventId, address, uri);
+        EventFullInfoDto event = eventService.getPublishedById(eventId, request);
         log.debug("Event found= " + event);
         return event;
     }
