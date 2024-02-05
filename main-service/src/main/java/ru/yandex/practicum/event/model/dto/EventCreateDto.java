@@ -7,6 +7,7 @@ import ru.yandex.practicum.validation.InTwoHours;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -44,6 +45,7 @@ public class EventCreateDto {
     Boolean paid = false;
 
     @NotNull(message = "Field: participantLimit. Error: must not be null.")
+    @PositiveOrZero(message = "Field: participantLimit. Error: must be positive")
     Long participantLimit = 0L;
 
     @NotNull(message = "Field: requestModeration. Error: must not be null.")

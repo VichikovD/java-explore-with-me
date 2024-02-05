@@ -7,6 +7,7 @@ import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.validation.InTwoHours;
 import ru.yandex.practicum.validation.NotEmptyIfNotNull;
 
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -39,6 +40,7 @@ public class EventUpdateDto {
 
     Boolean paid;
 
+    @PositiveOrZero(message = "Field: participantLimit. Error: must be positive")
     Long participantLimit;
 
     Boolean requestModeration;
