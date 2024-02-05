@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class StatisticsManager {
     final StatisticClient statisticClient;
-    final String APPLICATION_NAME = "ewm-main-service";
+    final static String APPLICATION_NAME = "ewm-main-service";
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public void sendStatistic(HttpServletRequest request) {
