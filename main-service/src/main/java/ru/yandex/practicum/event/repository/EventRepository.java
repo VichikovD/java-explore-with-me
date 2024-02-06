@@ -27,9 +27,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "JOIN FETCH e.category AS c " +
             "JOIN FETCH e.initiator AS i " +
             "JOIN FETCH e.location AS l " +
-            "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
-            "AND (:states IS NULL OR e.state IN :states) " +
-            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "WHERE ((:users) IS NULL OR e.initiator.id IN (:users)) " +
+            "AND ((:states) IS NULL OR e.state IN (:states)) " +
+            "AND ((:categories) IS NULL OR e.category.id IN (:categories)) " +
             "AND (" +
             "cast(:rangeStart AS timestamp) IS NULL " +
             "OR cast(:rangeEnd AS timestamp) IS NULL " +
@@ -48,7 +48,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             ":text IS NULL " +
             "OR (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', :text, '%'))) OR LOWER(e.description) LIKE(LOWER(CONCAT('%', :text, '%'))))" +
             ") " +
-            "AND (:categories IS NULL OR e.category_id IN :categories) " +
+            "AND ((:categories) IS NULL OR e.category_id IN (:categories)) " +
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND (" +
             "(cast(:rangeStart AS timestamp) IS NULL OR cast(:rangeEnd AS timestamp) IS NULL OR (e.event_date BETWEEN :rangeStart AND :rangeEnd))" +
@@ -75,7 +75,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             ":text IS NULL " +
             "OR (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', :text, '%'))) OR LOWER(e.description) LIKE(LOWER(CONCAT('%', :text, '%'))))" +
             ") " +
-            "AND (:categories IS NULL OR e.category_id IN :categories) " +
+            "AND ((:categories) IS NULL OR e.category_id IN (:categories)) " +
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND (" +
             "(cast(:rangeStart AS timestamp) IS NULL OR cast(:rangeEnd AS timestamp) IS NULL OR (e.event_date BETWEEN :rangeStart AND :rangeEnd))" +
