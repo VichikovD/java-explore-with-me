@@ -71,6 +71,7 @@ public class EventServiceAdminImpl implements EventServiceAdmin {
                 }
             }
         }
+        event.setPublishedOn(LocalDateTime.now());
 
         EventMapper.updateModelWithUpdateDtoNotNullFields(event, eventRequestDto, category, location);
         Event eventUpdated = eventRepository.save(event);
