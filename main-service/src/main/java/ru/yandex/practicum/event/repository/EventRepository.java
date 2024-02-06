@@ -66,7 +66,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("rangeEnd") LocalDateTime rangeEnd,
             Pageable pageable);
 
-    @Query(value = "SELECT * " +
+    /*(value = "SELECT * " +
             "FROM events AS e " +
             "LEFT JOIN categories AS c ON e.category_id = c.category_id " +
             "LEFT JOIN users AS u ON e.initiator_id = u.user_id " +
@@ -81,7 +81,20 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "(cast((:rangeStart) AS timestamp) IS NULL OR cast((:rangeEnd) AS timestamp) IS NULL OR (e.event_date BETWEEN (:rangeStart) AND (:rangeEnd)))" +
             "OR ((cast((:rangeStart) AS timestamp) IS NULL OR cast((:rangeEnd) AS timestamp) IS NULL) AND e.event_date > NOW())" +
             ") " +
-            "AND (e.state = 'PUBLISHED') ", nativeQuery = true)
+            "AND (e.state = 'PUBLISHED') ", nativeQuery = true)*/
+
+    @Query(value = "SELECT e " +
+            "FROM Event AS e " +
+            "LEFT JOIN FETCH e.category AS c " +
+            "LEFT JOIN FETCH e.initiator AS i " +
+            "WHERE ((:text) IS NULL OR (LOWER(e.annotation) LIKE(LOWER(CONCAT('%', (:text), '%'))) OR LOWER(e.description) LIKE(LOWER(CONCAT('%', (:text), '%'))))) " +
+            "AND ((:categories) IS NULL OR e.category.id IN (:categories)) " +
+            "AND ((:paid) IS NULL OR e.paid = (:paid)) " +
+            "AND (" +
+            "(cast((:rangeStart) AS timestamp) IS NULL OR cast((:rangeEnd) AS timestamp) IS NULL OR (e.eventDate BETWEEN (:rangeStart) AND (:rangeEnd)))" +
+            "OR ((cast((:rangeStart) AS timestamp) IS NULL OR cast((:rangeEnd) AS timestamp) IS NULL) AND e.eventDate > NOW())" +
+            ") " +
+            "AND (e.state = 'PUBLISHED')")
     List<Event> findAllFilteredAsUser(
             @Param("text") String text,
             @Param("categories") Collection<Long> categories,
