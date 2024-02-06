@@ -40,6 +40,7 @@ public class EventMapper {
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.toDto(event.getCategory()))
+                .participantLimit(event.getParticipantLimit())
                 .eventDate(event.getEventDate())
                 .initiator(UserMapper.toDto(event.getInitiator()))
                 .paid(event.isPaid())

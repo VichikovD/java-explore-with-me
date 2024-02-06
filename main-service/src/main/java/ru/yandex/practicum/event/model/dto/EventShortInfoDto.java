@@ -1,6 +1,7 @@
 package ru.yandex.practicum.event.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.category.CategoryDto;
@@ -22,6 +23,9 @@ public class EventShortInfoDto {
     CategoryDto category;
 
     long confirmedRequests;
+
+    @JsonIgnore
+    long participantLimit;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -20,6 +20,7 @@ import ru.yandex.practicum.util.StatisticsManager;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,16 +36,17 @@ public class EventServicePublicImpl implements EventServicePublic {
                                                HttpServletRequest request) {
         validateStartAndEndTime(rangeStart, rangeEnd);
 
-        List<Event> eventList;
-        if (onlyAvailable) {
-            eventList = eventRepository.findAllAvailableFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
-        } else {
-            eventList = eventRepository.findAllFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
-        }
-
+        List<Event> eventList = eventRepository.findAllFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
         List<EventShortInfoDto> eventShortInfoDtoList = EventMapper.modelListToShortInfoDtoList(eventList);
 
         eventRequestsManager.updateConfirmedRequestsToShortDtos(eventShortInfoDtoList);
+
+        if (onlyAvailable) {
+            eventShortInfoDtoList = eventShortInfoDtoList.stream()
+                    .filter((eventShortInfoDto -> eventShortInfoDto.getParticipantLimit() > eventShortInfoDto.getConfirmedRequests()))
+                    .collect(Collectors.toList());
+        }
+
         statisticsManager.updateViewsToShortInfoDtos(eventShortInfoDtoList);
         statisticsManager.sendStatistic(request);
         return eventShortInfoDtoList;

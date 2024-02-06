@@ -164,6 +164,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
 
         long participantLimit = event.getParticipantLimit();
         long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
+        System.out.println("confirmedRequests = " + confirmedRequests);
         if (participantLimit == 0 || !event.isRequestModeration()) {
             // No action. Only return EventRequestStatusResult
             return new EventRequestStatusResult();
@@ -172,6 +173,7 @@ public class EventServicePrivateImpl implements EventServicePrivate {
         // participantLimit <= confirmedRequests не строго равно с заделом не ситуацию с багом,
         // когда confirmedRequests > participantLimit
         if (participantLimit <= confirmedRequests) {
+            System.out.println("participantLimit <= confirmedRequests is TRUE");
             rejectAllPendingRequests();
             throw new DataIntegrityViolationException("Participant limit (" + participantLimit + ") is reached");
         }
@@ -196,33 +198,38 @@ public class EventServicePrivateImpl implements EventServicePrivate {
             request.setStatus(newStatus);
         }
 
+        // keep in mind that totalConfirmedRequestsQuantity works only if newStatus == confirmed
+        long totalConfirmedRequestsQuantity = confirmedRequests + eventRequestIdList.size();
         if (EventRequestStatus.CONFIRMED.equals(newStatus)) {
-            long totalConfirmedRequestsQuantity = confirmedRequests + eventRequestIdList.size();
             if (participantLimit < totalConfirmedRequestsQuantity) {
                 long freeSpaceQuantity = participantLimit - confirmedRequests;
                 throw new DataIntegrityViolationException("Confirmation rejected. Free spaces: " + freeSpaceQuantity +
                         " but intended to confirm quantity: " + intendedToConfirmQuantity);
-
-            } else if (participantLimit == totalConfirmedRequestsQuantity) {
-                rejectAllPendingRequests();
             }
         }
 
+        System.out.println("Saving RequestList=" + eventRequestList);
         List<EventRequest> savedRequestList = eventRequestRepository.saveAll(eventRequestList);
         List<EventRequestInfoDto> savedRequestDtoList = EventRequestMapper.listModelToListInfoDto(savedRequestList);
 
         EventRequestStatusResult requestStatusResult = new EventRequestStatusResult();
         if (EventRequestStatus.CONFIRMED.equals(newStatus)) {
             requestStatusResult.addAllConfirmed(savedRequestDtoList);
+
+            if (participantLimit == totalConfirmedRequestsQuantity) {
+                System.out.println("participantLimit == totalConfirmedRequestsQuantity is true");
+                rejectAllPendingRequests();
+            }
         } else {
             requestStatusResult.addAllRejected(savedRequestDtoList);
         }
-
         return requestStatusResult;
     }
 
     private void rejectAllPendingRequests() {
+        System.out.println("rejectAllPendingRequests is activated");
         List<EventRequest> requests = eventRequestRepository.findAllByStatus(EventRequestStatus.PENDING);
+        System.out.println("findAllByStatusPending=" + requests);
         for (EventRequest request : requests) {
             request.setStatus(EventRequestStatus.REJECTED);
         }

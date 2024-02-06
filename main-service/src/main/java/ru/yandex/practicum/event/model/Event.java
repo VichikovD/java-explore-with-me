@@ -29,10 +29,8 @@ public class Event {
     @JoinColumn(name = "category_id")
     Category category;
 
-    /*
-    @OneToMany(mappedBy = "event")
-    Set<EventRequest> confirmedRequests;
-    */
+    /*@OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    Set<EventRequest> eventRequests;*/
 
     @Column(name = "created_on")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
