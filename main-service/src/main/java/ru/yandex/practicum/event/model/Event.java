@@ -25,12 +25,9 @@ public class Event {
     @Column(name = "annotation")
     String annotation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     Category category;
-
-    /*@OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
-    Set<EventRequest> eventRequests;*/
 
     @Column(name = "created_on")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -46,11 +43,11 @@ public class Event {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "initiator_id")
     User initiator;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "location_id")
     Location location;
 
@@ -74,9 +71,4 @@ public class Event {
 
     @Column(name = "title")
     String title;
-
-    /*
-    @Column(name = "views")
-    long views;
-    */
 }

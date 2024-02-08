@@ -6,10 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.Statistic;
+import ru.yandex.practicum.StatisticClient;
 import ru.yandex.practicum.event.model.EventSort;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
-import ru.yandex.practicum.event.service.EventServicePublic;
+import ru.yandex.practicum.event.service.EventService;
 import ru.yandex.practicum.util.OffsetPageable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,8 +22,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
-public class EventControllerPublic {
-    final EventServicePublic eventService;
+public class EventPublicController {
+    final EventService eventService;
+
+    final StatisticClient statisticClient;
+    static final String APPLICATION_NAME = "ewm-main-service";
 
     @GetMapping
     public List<EventShortInfoDto> getFiltered(@RequestParam(name = "text", required = false) String text,
@@ -36,9 +41,17 @@ public class EventControllerPublic {
                                                @RequestParam(name = "from", defaultValue = "0") int offset,
                                                @RequestParam(name = "size", defaultValue = "10") int limit,
                                                HttpServletRequest request) {
+        if (rangeStart != null && rangeEnd != null) {
+            if (rangeStart.isAfter(rangeEnd)) {
+                throw new IllegalArgumentException("Start can't be after end");
+            }
+        }
+
+        String address = request.getRemoteAddr();
+        String uri = request.getRequestURI();
         log.info("GET \"/events?text={}&categories={}&paid={}&rangeStart={}&rangeEnd={}&onlyAvailable={}&sort={}&from={}&size={}\" " +
                         "Address={}, URI={}", text, categories, paid, rangeStart, rangeEnd, onlyAvailable, stringSort,
-                offset, limit, request.getRemoteAddr(), request.getRequestURI());
+                offset, limit, address, uri);
         EventSort eventSort = EventSort.from(stringSort);
         Sort sort;
         if (EventSort.EVENT_DATE.equals(eventSort)) {
@@ -50,14 +63,13 @@ public class EventControllerPublic {
         }
         Pageable pageable = new OffsetPageable(offset, limit);
 
-
-        List<EventShortInfoDto> eventList = eventService.getFiltered(text, categories, paid, rangeStart, rangeEnd,
-                onlyAvailable, pageable, sort, request);
+        List<EventShortInfoDto> eventList = eventService.findShortDtosFiltered(text, categories, paid, rangeStart, rangeEnd,
+                onlyAvailable, pageable, sort, address, uri);
+        sendStatistic(address, uri);
         log.debug("EventList found= " + eventList);
         return eventList;
     }
 
-    // "информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики"
     @GetMapping("/{eventId}")
     public EventFullInfoDto getPublishedById(@PathVariable(name = "eventId") int eventId,
                                              HttpServletRequest request) {
@@ -65,8 +77,20 @@ public class EventControllerPublic {
         String uri = request.getRequestURI();
         log.info("GET \"/events/{} Address={}, URI={}", eventId, address, uri);
 
-        EventFullInfoDto event = eventService.getPublishedById(eventId, request);
+        EventFullInfoDto event = eventService.getPublishedById(eventId, address, uri);
+        sendStatistic(address, uri);
         log.debug("Event found= " + event);
         return event;
+    }
+
+    private void sendStatistic(String address, String uri) {
+        Statistic statisticToSend = Statistic.builder()
+                .app(APPLICATION_NAME)
+                .uri(uri)
+                .ip(address)
+                .timestamp(LocalDateTime.now())
+                .build();
+        log.debug("Statistic sent=" + statisticToSend);
+        statisticClient.create(statisticToSend);
     }
 }

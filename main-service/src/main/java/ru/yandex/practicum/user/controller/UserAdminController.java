@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.user.UserDto;
-import ru.yandex.practicum.user.service.UserServiceAdmin;
+import ru.yandex.practicum.user.service.UserService;
 import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;
@@ -18,8 +18,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Validated
-public class UserControllerAdmin {
-    final UserServiceAdmin userService;
+public class UserAdminController {
+    final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

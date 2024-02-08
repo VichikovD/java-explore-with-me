@@ -5,10 +5,14 @@ import ru.yandex.practicum.category.CategoryDto;
 
 import java.util.List;
 
+public interface CategoryService {
+    CategoryDto create(CategoryDto categoryDto);
 
-public interface CategoryServicePublic {
+    CategoryDto patch(CategoryDto categoryDto, long catId);
+
+    void delete(long catId);
+
     List<CategoryDto> getFiltered(Pageable pageable);
 
     CategoryDto getById(long compId);
-
 }

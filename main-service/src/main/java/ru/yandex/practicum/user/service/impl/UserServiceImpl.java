@@ -8,13 +8,13 @@ import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserDto;
 import ru.yandex.practicum.user.UserMapper;
 import ru.yandex.practicum.user.UserRepository;
-import ru.yandex.practicum.user.service.UserServiceAdmin;
+import ru.yandex.practicum.user.service.UserService;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceAdminImpl implements UserServiceAdmin {
+public class UserServiceImpl implements UserService {
     final UserRepository userRepository;
 
     @Override
@@ -39,18 +39,9 @@ public class UserServiceAdminImpl implements UserServiceAdmin {
 
     @Override
     public List<UserDto> getAllByIdInFiltered(List<Long> users, Pageable pageable) {
-        List<User> categoryList = userRepository.findAllByIdIn(users, pageable);
+        List<User> categoryList = userRepository.findByIdIn(users, pageable);
         return UserMapper.listToDtoList(categoryList);
     }
-
-    /*@Override
-    public CategoryDto patch(CategoryDto categoryDto, long catId) {
-        Category categoryToChange = userRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
-        CategoryMapper.updateByDto(categoryToChange, categoryDto);
-        Category categorySaved = userRepository.save(categoryToChange);
-        return CategoryMapper.toFullInfoDto(categorySaved);
-    }*/
 
     @Override
     public void delete(long userId) {

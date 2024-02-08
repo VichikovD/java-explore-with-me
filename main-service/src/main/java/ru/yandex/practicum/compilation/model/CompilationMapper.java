@@ -9,6 +9,7 @@ import ru.yandex.practicum.event.model.mapper.EventMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CompilationMapper {
@@ -46,11 +47,15 @@ public class CompilationMapper {
         }
     }
 
-    public static List<CompilationInfoDto> modelListToInfoDtoList(List<Compilation> compilationList) {
+    public static List<CompilationInfoDto> modelListToInfoDtoList(List<Compilation> compilationList,
+                                                                  Map<Long, Long> viewsMap,
+                                                                  Map<Long, Long> requestsMap) {
         List<CompilationInfoDto> compilationInfoDtoList = new ArrayList<>();
         for (Compilation compilation : compilationList) {
             Set<Event> eventSet = compilation.getEvents();
             Set<EventShortInfoDto> eventShortInfoDtoSet = EventMapper.modelSetToShortInfoDtoSet(eventSet);
+            EventMapper.updateViewsToShortDtos(eventShortInfoDtoSet, viewsMap);
+            EventMapper.updateConfirmedRequestsToShortDtos(eventShortInfoDtoSet, requestsMap);
             compilationInfoDtoList.add(toInfoDto(compilation, eventShortInfoDtoSet));
         }
         return compilationInfoDtoList;

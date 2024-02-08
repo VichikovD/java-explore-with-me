@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.compilation.model.dto.CompilationInfoDto;
-import ru.yandex.practicum.compilation.service.CompilationServicePublic;
+import ru.yandex.practicum.compilation.service.CompilationService;
 import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;
@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/compilations")
 @RequiredArgsConstructor
-public class CompilationControllerPublic {
-    final CompilationServicePublic compilationService;
+public class CompilationPublicController {
+    final CompilationService compilationService;
 
     @GetMapping
     public List<CompilationInfoDto> getFiltered(@RequestParam(name = "pinned", required = false) Boolean pinned,

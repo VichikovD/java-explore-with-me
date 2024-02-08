@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.category.CategoryDto;
-import ru.yandex.practicum.category.service.CategoryServiceAdmin;
+import ru.yandex.practicum.category.service.CategoryService;
 
 @Slf4j
 @RequestMapping("/admin/categories")
 @RestController
 @RequiredArgsConstructor
 @Validated
-public class CategoryControllerAdmin {
-    final CategoryServiceAdmin categoryService;
+public class CategoryAdminController {
+    final CategoryService categoryService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

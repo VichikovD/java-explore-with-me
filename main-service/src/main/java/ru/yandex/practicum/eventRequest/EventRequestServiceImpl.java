@@ -48,17 +48,6 @@ public class EventRequestServiceImpl implements EventRequestService {
                 .created(LocalDateTime.now())
                 .build();
 
-        /*long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
-        long participantLimit = event.getParticipantLimit();
-        boolean isRequestModeration = event.isRequestModeration();
-        if (!isRequestModeration || participantLimit == 0) {
-            eventRequestToSave.setStatus(EventRequestStatus.CONFIRMED);
-        } else if (confirmedRequests >= participantLimit) {
-            throw new DataIntegrityViolationException("Participant limit (" + participantLimit + ") is reached");
-        } else {
-            eventRequestToSave.setStatus(EventRequestStatus.PENDING);
-        }*/
-
         if (!event.isRequestModeration() || participantLimit == 0) {
             eventRequestToSave.setStatus(EventRequestStatus.CONFIRMED);
         } else {
@@ -72,7 +61,7 @@ public class EventRequestServiceImpl implements EventRequestService {
     public List<EventRequestInfoDto> getAllByRequesterId(long requesterId) {
         userRepository.findById(requesterId)
                 .orElseThrow(() -> new NotFoundException("User with id=" + requesterId + " was not found"));
-        List<EventRequest> eventRequestList = eventRequestRepository.findAllByRequesterId(requesterId);
+        List<EventRequest> eventRequestList = eventRequestRepository.findByRequesterId(requesterId);
         return EventRequestMapper.listModelToListInfoDto(eventRequestList);
     }
 

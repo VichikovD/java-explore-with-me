@@ -5,7 +5,7 @@ import ru.yandex.practicum.user.UserDto;
 
 import java.util.List;
 
-public interface UserServiceAdmin {
+public interface UserService {
     UserDto create(UserDto userDto);
 
     UserDto getById(long userId);

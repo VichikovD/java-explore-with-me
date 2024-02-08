@@ -10,10 +10,7 @@ import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserMapper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EventMapper {
     public static EventFullInfoDto toFullInfoDto(Event event) {
@@ -189,6 +186,38 @@ public class EventMapper {
         String title = eventRequestDto.getTitle();
         if (title != null) {
             event.setTitle(title);
+        }
+    }
+
+    public static void updateConfirmedRequestsToFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList,
+                                                         Map<Long, Long> eventIdToConfirmedRequests) {
+        for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
+            Long views = eventIdToConfirmedRequests.getOrDefault(fullInfoDto.getId(), 0L);
+            fullInfoDto.setConfirmedRequests(views);
+        }
+    }
+
+    public static void updateConfirmedRequestsToShortDtos(Collection<EventShortInfoDto> eventFullInfoDtoList,
+                                                          Map<Long, Long> eventIdToConfirmedRequests) {
+        for (EventShortInfoDto shortInfoDto : eventFullInfoDtoList) {
+            Long views = eventIdToConfirmedRequests.getOrDefault(shortInfoDto.getId(), 0L);
+            shortInfoDto.setConfirmedRequests(views);
+        }
+    }
+
+    public static void updateViewsToFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList,
+                                             Map<Long, Long> eventIdToViews) {
+        for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
+            Long views = eventIdToViews.getOrDefault(fullInfoDto.getId(), 0L);
+            fullInfoDto.setViews(views);
+        }
+    }
+
+    public static void updateViewsToShortDtos(Collection<EventShortInfoDto> eventFullInfoDtoList,
+                                              Map<Long, Long> eventIdToViews) {
+        for (EventShortInfoDto shortInfoDto : eventFullInfoDtoList) {
+            Long views = eventIdToViews.getOrDefault(shortInfoDto.getId(), 0L);
+            shortInfoDto.setViews(views);
         }
     }
 }

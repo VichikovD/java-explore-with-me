@@ -30,8 +30,6 @@ public class EventUpdateDto {
     @NotEmptyIfNotNull(message = "Field: description. Error: must not be empty if not null.")
     String description;
 
-    //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    //@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @InTwoHours(message = "Field: eventDate. Error: Must contain time at least 2 hours ahead of now")
     LocalDateTime eventDate;

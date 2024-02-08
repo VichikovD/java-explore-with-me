@@ -1,6 +1,8 @@
 package ru.yandex.practicum.compilation.model;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import ru.yandex.practicum.event.model.Event;
 
 import javax.persistence.*;
@@ -26,11 +28,12 @@ public class Compilation {
     @Column(name = "title")
     String title;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "compilations_events",
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
+    @Fetch(FetchMode.SUBSELECT)
     Set<Event> events;
 }

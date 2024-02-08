@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.compilation.model.dto.CompilationCreateDto;
 import ru.yandex.practicum.compilation.model.dto.CompilationInfoDto;
 import ru.yandex.practicum.compilation.model.dto.CompilationRequestDto;
-import ru.yandex.practicum.compilation.service.CompilationServiceAdmin;
+import ru.yandex.practicum.compilation.service.CompilationService;
 
 @Slf4j
 @RestController
 @RequestMapping("/admin/compilations")
 @RequiredArgsConstructor
 @Validated
-public class CompilationControllerAdmin {
-    final CompilationServiceAdmin compilationService;
+public class CompilationAdminController {
+    final CompilationService compilationService;
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)

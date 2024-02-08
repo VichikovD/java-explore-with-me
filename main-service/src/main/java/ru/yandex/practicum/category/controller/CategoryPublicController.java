@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.category.CategoryDto;
-import ru.yandex.practicum.category.service.CategoryServicePublic;
+import ru.yandex.practicum.category.service.CategoryService;
 import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;
@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
-public class CategoryControllerPublic {
-    final CategoryServicePublic categoryService;
+public class CategoryPublicController {
+    final CategoryService categoryService;
 
     @GetMapping
     public List<CategoryDto> getFiltered(@RequestParam(name = "from", defaultValue = "0") int offset,
