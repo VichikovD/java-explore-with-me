@@ -1,14 +1,11 @@
 package ru.yandex.practicum.event.service;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.model.dto.*;
 import ru.yandex.practicum.eventRequest.model.EventRequestInfoDto;
 import ru.yandex.practicum.eventRequest.model.EventRequestStatusChanger;
 import ru.yandex.practicum.eventRequest.model.EventRequestStatusResult;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
@@ -18,12 +15,9 @@ public interface EventService {
 
     EventFullInfoDto updateWithoutValidation(long eventId, EventRequestAdminDto eventRequestDto);
 
-    List<EventFullInfoDto> findFullDtosFiltered(List<Long> users, List<PublishState> publishStates, List<Long> categories,
-                                                LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    List<EventFullInfoDto> findFullDtosFiltered(GetFullEventsRequest getFullEventsRequest);
 
-    List<EventShortInfoDto> findShortDtosFiltered(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                                  LocalDateTime rangeEnd, boolean onlyAvailable, Pageable pageable, Sort sort,
-                                                  String address, String uri);
+    List<EventShortInfoDto> findShortDtosFiltered(GetShortEventsRequest getShortEventsRequest);
 
     EventFullInfoDto getPublishedById(int eventId, String address, String uri);
 

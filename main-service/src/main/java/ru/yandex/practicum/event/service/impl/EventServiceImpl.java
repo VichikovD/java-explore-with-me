@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.StatisticClient;
 import ru.yandex.practicum.StatisticInfo;
@@ -102,9 +101,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullInfoDto> findFullDtosFiltered(List<Long> users, List<PublishState> states, List<Long> categories,
-                                                       LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable) {
-        List<Event> eventList = eventRepository.findFilteredAsAdmin(users, states, categories, rangeStart, rangeEnd, pageable);
+    public List<EventFullInfoDto> findFullDtosFiltered(GetFullEventsRequest getFullEventsRequest) {
+        List<Event> eventList = eventRepository.findFilteredAsAdmin(getFullEventsRequest.getUsers(), getFullEventsRequest.getPublishState(),
+                getFullEventsRequest.getCategories(), getFullEventsRequest.getRangeStart(), getFullEventsRequest.getRangeEnd(), getFullEventsRequest.getPageable());
         List<EventFullInfoDto> eventFullInfoDtoList = EventMapper.modelListToFullInfoDtoList(eventList);
 
 
@@ -118,15 +117,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortInfoDto> findShortDtosFiltered(String text, List<Long> categories, Boolean paid,
-                                                         LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                                         boolean onlyAvailable, Pageable pageable, Sort sort,
-                                                         String address, String uri) {
-
-        List<Event> eventList = eventRepository.findFilteredAsUser(text, categories, paid, rangeStart, rangeEnd, pageable);
+    public List<EventShortInfoDto> findShortDtosFiltered(GetShortEventsRequest shortEventsRequest) {
+        List<Event> eventList = eventRepository.findFilteredAsUser(shortEventsRequest.getText(), shortEventsRequest.getCategories(),
+                shortEventsRequest.getPaid(), shortEventsRequest.getRangeStart(), shortEventsRequest.getRangeEnd(), shortEventsRequest.getPageable());
         List<EventShortInfoDto> eventShortInfoDtoList = EventMapper.modelListToShortInfoDtoList(eventList);
 
-        if (onlyAvailable) {
+        if (shortEventsRequest.isOnlyAvailable()) {
             eventShortInfoDtoList = eventShortInfoDtoList.stream()
                     .filter((eventShortInfoDto -> eventShortInfoDto.getParticipantLimit() > eventShortInfoDto.getConfirmedRequests()))
                     .collect(Collectors.toList());

@@ -11,6 +11,7 @@ import ru.yandex.practicum.StatisticClient;
 import ru.yandex.practicum.event.model.EventSort;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
+import ru.yandex.practicum.event.model.dto.GetShortEventsRequest;
 import ru.yandex.practicum.event.service.EventService;
 import ru.yandex.practicum.util.OffsetPageable;
 
@@ -63,8 +64,20 @@ public class EventPublicController {
         }
         Pageable pageable = new OffsetPageable(offset, limit);
 
-        List<EventShortInfoDto> eventList = eventService.findShortDtosFiltered(text, categories, paid, rangeStart, rangeEnd,
-                onlyAvailable, pageable, sort, address, uri);
+        GetShortEventsRequest getShortEventsRequest = GetShortEventsRequest.builder()
+                .text(text)
+                .categories(categories)
+                .paid(paid)
+                .rangeStart(rangeStart)
+                .rangeEnd(rangeEnd)
+                .onlyAvailable(onlyAvailable)
+                .pageable(pageable)
+                .sort(sort)
+                .address(address)
+                .uri(uri)
+                .build();
+
+        List<EventShortInfoDto> eventList = eventService.findShortDtosFiltered(getShortEventsRequest);
         sendStatistic(address, uri);
         log.debug("EventList found= " + eventList);
         return eventList;

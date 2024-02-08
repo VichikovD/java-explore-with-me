@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.model.dto.EventFullInfoDto;
 import ru.yandex.practicum.event.model.dto.EventRequestAdminDto;
+import ru.yandex.practicum.event.model.dto.GetFullEventsRequest;
 import ru.yandex.practicum.event.service.EventService;
 import ru.yandex.practicum.util.OffsetPageable;
 
@@ -55,8 +56,15 @@ public class EventAdminController {
             }
         }
 
-        List<EventFullInfoDto> eventFullInfoDtoList = eventService.findFullDtosFiltered(users, publishStates, categories,
-                rangeStart, rangeEnd, pageable);
+        GetFullEventsRequest getFullEventsRequest = GetFullEventsRequest.builder()
+                .users(users)
+                .publishState(publishStates)
+                .categories(categories)
+                .rangeStart(rangeStart)
+                .rangeEnd(rangeEnd)
+                .pageable(pageable)
+                .build();
+        List<EventFullInfoDto> eventFullInfoDtoList = eventService.findFullDtosFiltered(getFullEventsRequest);
 
         log.debug("Event found=" + eventFullInfoDtoList);
         return eventFullInfoDtoList;
