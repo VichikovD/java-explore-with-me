@@ -352,6 +352,10 @@
 											"\r",
 											"pm.test(\"comment length check\", function(){\r",
 											"    pm.expect(target.length).to.be.equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target[0].comments.length).to.be.equal(1);\r",
 											"});"
 										],
 										"type": "text/javascript"
@@ -811,7 +815,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target[0].event).equal(138);\r",
+											"    pm.expect(target[0].event).equal(107);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -881,7 +885,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target.event).equal(138);\r",
+											"    pm.expect(target.event).equal(107);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
