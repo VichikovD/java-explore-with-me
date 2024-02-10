@@ -20,7 +20,7 @@ public class Statistic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statistic_id")
-    long id;
+    Long id;
 
     @Column(name = "app")
     @NotBlank(message = "App should not be empty")

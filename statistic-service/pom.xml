@@ -9,8 +9,6 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <name>ewm-statistic-server</name>
-
     <artifactId>statistic-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>

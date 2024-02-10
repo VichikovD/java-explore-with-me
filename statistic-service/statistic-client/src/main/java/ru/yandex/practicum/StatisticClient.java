@@ -36,7 +36,7 @@ public class StatisticClient extends BaseClient {
         }
     }
 
-    public List<Statistic> getAllByFilter(StatisticFilterDto statisticFilterDto) {
+    public List<StatisticInfo> getAllByFilter(StatisticFilterDto statisticFilterDto) {
         String encodedStart = URLEncoder.encode(statisticFilterDto.getStart(), StandardCharsets.UTF_8);
         String encodedEnd = URLEncoder.encode(statisticFilterDto.getEnd(), StandardCharsets.UTF_8);
 
@@ -45,7 +45,7 @@ public class StatisticClient extends BaseClient {
         ResponseEntity<Object> response = get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
         Object body = response.getBody();
         try {
-            return (ArrayList<Statistic>) body;
+            return (ArrayList<StatisticInfo>) body;
         } catch (ClassCastException e) {
             log.error(Arrays.toString(e.getStackTrace()));
             return new ArrayList<>();
