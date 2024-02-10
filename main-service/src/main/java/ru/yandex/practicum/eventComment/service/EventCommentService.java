@@ -1,6 +1,9 @@
-package ru.yandex.practicum.eventComment;
+package ru.yandex.practicum.eventComment.service;
 
 import org.springframework.data.domain.Pageable;
+import ru.yandex.practicum.eventComment.GetEventCommentsRequest;
+import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.EventCommentRequestDto;
 
 import java.util.List;
 

@@ -3,6 +3,7 @@ package ru.yandex.practicum.eventComment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.yandex.practicum.eventComment.model.EventComment;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -13,6 +14,8 @@ public interface EventCommentRepository extends JpaRepository<EventComment, Long
     Optional<EventComment> findByIdAndAuthorId(long id, long authorId);
 
     List<EventComment> findByAuthorId(long authorId, Pageable pageable);
+
+    List<EventComment> findByEventIdIn(Collection<Long> events);
 
     @Query(value = "SELECT c " +
             "FROM EventComment AS c " +

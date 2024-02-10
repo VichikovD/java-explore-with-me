@@ -1,4 +1,4 @@
-package ru.yandex.practicum.eventComment;
+package ru.yandex.practicum.eventComment.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +7,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.EventCommentRequestDto;
+import ru.yandex.practicum.eventComment.service.EventCommentService;
 import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;

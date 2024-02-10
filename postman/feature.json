@@ -321,7 +321,69 @@
 							"response": []
 						},
 						{
-							"name": "get all comments for event",
+							"name": "get events with comments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment received\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target[0].comments[0].authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target[0].comments[0].text).equal(\"comment text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target[0].comments[0].event).equal(107);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target[0].comments[0].modified).equal(false);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/admin/events?users=138",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"events"
+									],
+									"query": [
+										{
+											"key": "users",
+											"value": "138"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all comments by author",
 							"event": [
 								{
 									"listen": "test",
@@ -343,7 +405,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target[0].event).equal(1);\r",
+											"    pm.expect(target[0].event).equal(107);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -406,7 +468,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target.event).equal(1);\r",
+											"    pm.expect(target.event).equal(107);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -457,7 +519,7 @@
 							"response": []
 						},
 						{
-							"name": "get all comments for event",
+							"name": "get all comments by author",
 							"event": [
 								{
 									"listen": "test",
@@ -479,7 +541,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target[0].event).equal(1);\r",
+											"    pm.expect(target[0].event).equal(107);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -565,7 +627,7 @@
 							"response": []
 						},
 						{
-							"name": "get all comments for event empty",
+							"name": "get all comments by author (empty)",
 							"event": [
 								{
 									"listen": "test",
@@ -749,7 +811,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target[0].event).equal(1);\r",
+											"    pm.expect(target[0].event).equal(138);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -819,7 +881,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target.event).equal(1);\r",
+											"    pm.expect(target.event).equal(138);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -887,7 +949,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"comment event id check\", function(){\r",
-											"    pm.expect(target[0].event).equal(1);\r",
+											"    pm.expect(target[0].event).equal(107);\r",
 											"});\r",
 											"\r",
 											"pm.test(\"comment modified check\", function(){\r",
@@ -975,7 +1037,7 @@
 							"response": []
 						},
 						{
-							"name": "get all comments for event empty",
+							"name": "get all comments by author (empty)",
 							"event": [
 								{
 									"listen": "test",

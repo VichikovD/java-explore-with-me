@@ -1,4 +1,4 @@
-package ru.yandex.practicum.eventComment;
+package ru.yandex.practicum.eventComment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -7,6 +7,12 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.repository.EventRepository;
+import ru.yandex.practicum.eventComment.EventCommentRepository;
+import ru.yandex.practicum.eventComment.GetEventCommentsRequest;
+import ru.yandex.practicum.eventComment.model.EventComment;
+import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.EventCommentMapper;
+import ru.yandex.practicum.eventComment.model.EventCommentRequestDto;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserRepository;
@@ -83,8 +89,8 @@ public class EventCommentServiceImpl implements EventCommentService {
 
     @Override
     public List<EventCommentInfoDto> getFiltered(GetEventCommentsRequest getEventCommentsRequest) {
-        List<EventComment> eventCommentList = eventCommentRepository.findFilteredAsAdmin(getEventCommentsRequest.events,
-                getEventCommentsRequest.rangeStart, getEventCommentsRequest.rangeEnd, getEventCommentsRequest.pageable);
+        List<EventComment> eventCommentList = eventCommentRepository.findFilteredAsAdmin(getEventCommentsRequest.getEvents(),
+                getEventCommentsRequest.getRangeStart(), getEventCommentsRequest.getRangeEnd(), getEventCommentsRequest.getPageable());
 
         return EventCommentMapper.modelListToInfoDtoList(eventCommentList);
     }

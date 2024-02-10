@@ -6,6 +6,9 @@ import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.Location;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.event.model.dto.*;
+import ru.yandex.practicum.eventComment.model.EventComment;
+import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.EventCommentMapper;
 import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserMapper;
 
@@ -210,6 +213,15 @@ public class EventMapper {
         for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
             Long views = eventIdToViews.getOrDefault(fullInfoDto.getId(), 0L);
             fullInfoDto.setViews(views);
+        }
+    }
+
+    public static void updateCommentsToFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList,
+                                                Map<Long, List<EventComment>> eventIdToViews) {
+        for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
+            List<EventComment> comments = eventIdToViews.getOrDefault(fullInfoDto.getId(), new ArrayList<>());
+            List<EventCommentInfoDto> commentDtos = EventCommentMapper.modelListToInfoDtoList(comments);
+            fullInfoDto.setComments(commentDtos);
         }
     }
 

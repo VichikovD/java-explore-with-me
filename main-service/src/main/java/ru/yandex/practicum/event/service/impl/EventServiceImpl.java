@@ -21,6 +21,7 @@ import ru.yandex.practicum.event.repository.EventRepository;
 import ru.yandex.practicum.event.repository.LocationRepository;
 import ru.yandex.practicum.event.service.EventService;
 import ru.yandex.practicum.eventComment.EventCommentRepository;
+import ru.yandex.practicum.eventComment.model.EventComment;
 import ru.yandex.practicum.eventRequest.EventRequestRepository;
 import ru.yandex.practicum.eventRequest.model.*;
 import ru.yandex.practicum.exception.NotFoundException;
@@ -99,8 +100,8 @@ public class EventServiceImpl implements EventService {
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
         EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
 
-
-
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(List.of(eventFullInfoDto));
+        EventMapper.updateCommentsToFullDtos(List.of(eventFullInfoDto), eventIdToComments);
 
         return eventFullInfoDto;
     }
@@ -117,6 +118,9 @@ public class EventServiceImpl implements EventService {
 
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(eventFullInfoDtoList);
         EventMapper.updateViewsToFullDtos(eventFullInfoDtoList, eventIdToViews);
+
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(eventFullInfoDtoList);
+        EventMapper.updateCommentsToFullDtos(eventFullInfoDtoList, eventIdToComments);
 
         return eventFullInfoDtoList;
     }
@@ -139,6 +143,7 @@ public class EventServiceImpl implements EventService {
         Map<Long, Long> eventIdToViews = getViewsMapForShortDtos(eventShortInfoDtoList);
         EventMapper.updateViewsToShortDtos(eventShortInfoDtoList, eventIdToViews);
 
+
         return eventShortInfoDtoList;
     }
 
@@ -152,6 +157,9 @@ public class EventServiceImpl implements EventService {
 
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
         EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(List.of(eventFullInfoDto));
+        EventMapper.updateCommentsToFullDtos(List.of(eventFullInfoDto), eventIdToComments);
 
         return eventFullInfoDto;
     }
@@ -175,6 +183,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullInfoDto.setConfirmedRequests(0);
         eventFullInfoDto.setViews(0);
+        eventFullInfoDto.setComments(new ArrayList<>());
         return eventFullInfoDto;
     }
 
@@ -221,6 +230,9 @@ public class EventServiceImpl implements EventService {
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
         EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
 
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(List.of(eventFullInfoDto));
+        EventMapper.updateCommentsToFullDtos(List.of(eventFullInfoDto), eventIdToComments);
+
         return eventFullInfoDto;
     }
 
@@ -254,6 +266,9 @@ public class EventServiceImpl implements EventService {
 
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
         EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(List.of(eventFullInfoDto));
+        EventMapper.updateCommentsToFullDtos(List.of(eventFullInfoDto), eventIdToComments);
 
         return eventFullInfoDto;
     }
@@ -358,17 +373,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getViewsMapForShortDtos(Collection<EventShortInfoDto> eventCollection) {
-        List<Long> eventIdList = eventCollection.stream()
-                .map(EventShortInfoDto::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIdList = getIdListFromShortEventDtos(eventCollection);
 
         return getIdToViewsMapByIdCollection(eventIdList);
     }
 
-    private Map<Long, Long> getViewsMapForFullDtos(Collection<EventFullInfoDto> eventCollection) {
-        List<Long> eventIdList = eventCollection.stream()
-                .map((EventFullInfoDto::getId))
-                .collect(Collectors.toList());
+    private Map<Long, Long> getViewsMapForFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
+        List<Long> eventIdList = getIdListFromFullEventDtos(eventFullInfoDtoList);
 
         return getIdToViewsMapByIdCollection(eventIdList);
     }
@@ -403,17 +414,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getRequestsMapForShortDtos(Collection<EventShortInfoDto> eventShortInfoDtoList) {
-        List<Long> eventIdList = eventShortInfoDtoList.stream()
-                .map(EventShortInfoDto::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIdList = getIdListFromShortEventDtos(eventShortInfoDtoList);
 
         return getIdToConfirmedRequestsMap(eventIdList);
     }
 
     private Map<Long, Long> getRequestsMapForFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
-        List<Long> eventIdList = eventFullInfoDtoList.stream()
-                .map(EventFullInfoDto::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIdList = getIdListFromFullEventDtos(eventFullInfoDtoList);
 
         return getIdToConfirmedRequestsMap(eventIdList);
     }
@@ -428,7 +435,29 @@ public class EventServiceImpl implements EventService {
         return eventIdToConfirmedRequests;
     }
 
-    private void updateCommentsForFullDtoCollection(Collection<EventFullInfoDto> eventFullInfoDtos) {
+    private Map<Long, List<EventComment>> getCommentsMapForFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
+        List<Long> eventIdList = getIdListFromFullEventDtos(eventFullInfoDtoList);
 
+        return getIdToCommentsMap(eventIdList);
+    }
+
+    private Map<Long, List<EventComment>> getIdToCommentsMap(Collection<Long> eventIdList) {
+        List<EventComment> eventList = eventCommentRepository.findByEventIdIn(eventIdList);
+
+        Map<Long, List<EventComment>> eventIdToConfirmedRequests = eventList.stream()
+                .collect(Collectors.groupingBy(eventComment -> eventComment.getEvent().getId()));
+        return eventIdToConfirmedRequests;
+    }
+
+    private List<Long> getIdListFromFullEventDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
+        return eventFullInfoDtoList.stream()
+                .map(EventFullInfoDto::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getIdListFromShortEventDtos(Collection<EventShortInfoDto> eventShortInfoDtoList) {
+        return eventShortInfoDtoList.stream()
+                .map(EventShortInfoDto::getId)
+                .collect(Collectors.toList());
     }
 }
