@@ -1,0 +1,1029 @@
+{
+	"info": {
+		"_postman_id": "d10ce03b-0860-497e-a599-1b9675fcdd10",
+		"name": "main-service-feature",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29351186"
+	},
+	"item": [
+		{
+			"name": "EventComments",
+			"item": [
+				{
+					"name": "Private",
+					"item": [
+						{
+							"name": "Create user id = 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"user created\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"User_1\",\r\n    \"email\" : \"email@user1.ru\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/admin/users",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create category",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"category created\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Category 1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/admin/categories",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create event",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"event created\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\r\n  \"category\": 1,\r\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\r\n  \"eventDate\": \"2024-12-31 15:10:05\",\r\n  \"location\": {\r\n    \"lat\": 55.754167,\r\n    \"lon\": 37.62\r\n  },\r\n  \"paid\": true,\r\n  \"participantLimit\": 2,\r\n  \"requestModeration\": true,\r\n  \"title\": \"Сплав на байдарках\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/events",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"events"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Error during creation of comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment not created due to event not published\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(409);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"text\": \"comment text\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments?eventId=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "eventId",
+											"value": "1"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin published event",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"event created\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"stateAction\": \"PUBLISH_EVENT\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/admin/events/:eventId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"events",
+										":eventId"
+									],
+									"variable": [
+										{
+											"key": "eventId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Created event comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment created\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"text\": \"comment text\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments?eventId=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "eventId",
+											"value": "1"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all comments for event",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment received\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target[0].authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target[0].text).equal(\"comment text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target[0].event).equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target[0].modified).equal(false);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "user update comment",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment reveiced by author id\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target.authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target.text).equal(\"updated text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target.event).equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target.modified).equal(true);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"text\": \"updated text\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments",
+										":commentId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										},
+										{
+											"key": "commentId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all comments for event",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment reveiced by author id\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target[0].authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target[0].text).equal(\"updated text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target[0].event).equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target[0].modified).equal(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete comment by id as user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment deleted\", function(){\r",
+											"    pm.expect(pm.response.code).to.equal(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments/:commentId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments",
+										":commentId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										},
+										{
+											"key": "commentId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all comments for event empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment received empty after deletion\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "Created event comment Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment created\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(201);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"text\": \"comment text\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments?eventId=1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "eventId",
+											"value": "1"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get filtered as admin empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment reveiced empty\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/admin/comments?events=1&rangeStart=2022-01-06%2013%3A30%3A38&rangeEnd=2023-01-06%2013%3A30%3A38",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "events",
+											"value": "1"
+										},
+										{
+											"key": "rangeStart",
+											"value": "2022-01-06%2013%3A30%3A38"
+										},
+										{
+											"key": "rangeEnd",
+											"value": "2023-01-06%2013%3A30%3A38"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get filtered as admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment reveiced by author id\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target[0].authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target[0].text).equal(\"comment text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target[0].event).equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target[0].modified).equal(false);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/admin/comments?events=1&rangeStart=2023-01-06%2013%3A30%3A38&rangeEnd=2025-01-06%2013%3A30%3A38",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "events",
+											"value": "1"
+										},
+										{
+											"key": "rangeStart",
+											"value": "2023-01-06%2013%3A30%3A38"
+										},
+										{
+											"key": "rangeEnd",
+											"value": "2025-01-06%2013%3A30%3A38"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update event comment as admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment reveiced by author id\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target.authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target.text).equal(\"admin updated text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target.event).equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target.modified).equal(true);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"text\": \"admin updated text\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/admin/comments/:commentId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"comments",
+										":commentId"
+									],
+									"variable": [
+										{
+											"key": "commentId",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get filtered as admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment reveiced by author id\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment author check\", function(){\r",
+											"    pm.expect(target[0].authorName).equal(\"User_1\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment text check\", function(){\r",
+											"    pm.expect(target[0].text).equal(\"admin updated text\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment event id check\", function(){\r",
+											"    pm.expect(target[0].event).equal(1);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment modified check\", function(){\r",
+											"    pm.expect(target[0].modified).equal(true);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/admin/comments?events=1&rangeStart=2023-01-06%2013%3A30%3A38&rangeEnd=2025-01-06%2013%3A30%3A38",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "events",
+											"value": "1"
+										},
+										{
+											"key": "rangeStart",
+											"value": "2023-01-06%2013%3A30%3A38"
+										},
+										{
+											"key": "rangeEnd",
+											"value": "2025-01-06%2013%3A30%3A38"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete event comment as admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment deleted\", function(){\r",
+											"    pm.expect(pm.response.code).to.equal(204);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/admin/comments/:commentId",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"admin",
+										"comments",
+										":commentId"
+									],
+									"variable": [
+										{
+											"key": "commentId",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all comments for event empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"comment received empty after deletion\", function(){\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"comment length check\", function(){\r",
+											"    pm.expect(target.length).to.be.equal(0);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/users/:userId/comments",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":userId",
+										"comments"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
