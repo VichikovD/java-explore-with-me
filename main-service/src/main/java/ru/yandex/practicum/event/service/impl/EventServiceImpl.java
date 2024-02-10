@@ -20,6 +20,7 @@ import ru.yandex.practicum.event.model.mapper.EventMapper;
 import ru.yandex.practicum.event.repository.EventRepository;
 import ru.yandex.practicum.event.repository.LocationRepository;
 import ru.yandex.practicum.event.service.EventService;
+import ru.yandex.practicum.eventComment.EventCommentRepository;
 import ru.yandex.practicum.eventRequest.EventRequestRepository;
 import ru.yandex.practicum.eventRequest.model.*;
 import ru.yandex.practicum.exception.NotFoundException;
@@ -44,6 +45,7 @@ public class EventServiceImpl implements EventService {
     final LocationRepository locationRepository;
     final EventRequestRepository eventRequestRepository;
     final StatisticClient statisticClient;
+    final EventCommentRepository eventCommentRepository;
     static final String APPLICATION_NAME = "ewm-main-service";
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -96,6 +98,9 @@ public class EventServiceImpl implements EventService {
 
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
         EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+
+
+
 
         return eventFullInfoDto;
     }
@@ -421,5 +426,9 @@ public class EventServiceImpl implements EventService {
                         eventRequest -> 1L,
                         (oldValue, newValue) -> oldValue + 1L));
         return eventIdToConfirmedRequests;
+    }
+
+    private void updateCommentsForFullDtoCollection(Collection<EventFullInfoDto> eventFullInfoDtos) {
+
     }
 }
