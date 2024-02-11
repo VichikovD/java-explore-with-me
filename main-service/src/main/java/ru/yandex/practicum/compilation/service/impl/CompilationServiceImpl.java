@@ -19,6 +19,7 @@ import ru.yandex.practicum.compilation.service.CompilationService;
 import ru.yandex.practicum.dto.StatisticFilterDto;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
+import ru.yandex.practicum.event.model.dto.EventUpdateParam;
 import ru.yandex.practicum.event.model.mapper.EventMapper;
 import ru.yandex.practicum.event.repository.EventRepository;
 import ru.yandex.practicum.eventRequest.EventRequestRepository;
@@ -54,16 +55,17 @@ public class CompilationServiceImpl implements CompilationService {
 
         Set<EventShortInfoDto> eventShortInfoDtoSet = EventMapper.modelSetToShortInfoDtoSet(eventList);
 
-        Map<Long, Long> idToRequestsMap = getRequestsMap(eventShortInfoDtoSet);
-        EventMapper.updateConfirmedRequestsToShortDtos(eventShortInfoDtoSet, idToRequestsMap);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForShortDtos(eventShortInfoDtoSet);
+        Map<Long, Long> eventIdToViews = getViewsMapForShortDtos(eventShortInfoDtoSet);
 
-        Map<Long, Long> idToViewsMap = getViewsMap(eventShortInfoDtoSet);
-        EventMapper.updateViewsToShortDtos(eventShortInfoDtoSet, idToViewsMap);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .build();
 
-        CompilationInfoDto compilationInfoDto = CompilationMapper.toInfoDto(compilationSaved, eventShortInfoDtoSet);
+        updateEventShortInfoDto(eventShortInfoDtoSet, updateParam);
 
-
-        return compilationInfoDto;
+        return CompilationMapper.toInfoDto(compilationSaved, eventShortInfoDtoSet);
     }
 
     @Override
@@ -83,16 +85,16 @@ public class CompilationServiceImpl implements CompilationService {
 
         Set<EventShortInfoDto> eventShortInfoDtoSet = EventMapper.modelSetToShortInfoDtoSet(compilationSaved.getEvents());
 
-        Map<Long, Long> idToRequestsMap = getRequestsMap(eventShortInfoDtoSet);
-        EventMapper.updateConfirmedRequestsToShortDtos(eventShortInfoDtoSet, idToRequestsMap);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForShortDtos(eventShortInfoDtoSet);
+        Map<Long, Long> eventIdToViews = getViewsMapForShortDtos(eventShortInfoDtoSet);
 
-        Map<Long, Long> idToViewsMap = getViewsMap(eventShortInfoDtoSet);
-        EventMapper.updateViewsToShortDtos(eventShortInfoDtoSet, idToViewsMap);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .build();
 
-
-        CompilationInfoDto compilationInfoDto = CompilationMapper.toInfoDto(compilationSaved, eventShortInfoDtoSet);
-        // TODO set for Collection confirmedRequests + views;
-        return compilationInfoDto;
+        updateEventShortInfoDto(eventShortInfoDtoSet, updateParam);
+        return CompilationMapper.toInfoDto(compilationSaved, eventShortInfoDtoSet);
     }
 
     @Override
@@ -125,8 +127,12 @@ public class CompilationServiceImpl implements CompilationService {
         Map<Long, Long> idToRequestsMap = getRequestsMapForCollection(compilationList);
         Map<Long, Long> idToViewsMap = getViewsMapForCollection(compilationList);
 
-        return CompilationMapper.modelListToInfoDtoList(compilationList,
-                idToRequestsMap, idToViewsMap);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(idToRequestsMap)
+                .eventIdToViews(idToViewsMap)
+                .build();
+
+        return CompilationMapper.modelListToInfoDtoList(compilationList, updateParam);
     }
 
     @Override
@@ -136,11 +142,15 @@ public class CompilationServiceImpl implements CompilationService {
 
         Set<EventShortInfoDto> eventShortInfoDtoSet = EventMapper.modelSetToShortInfoDtoSet(compilation.getEvents());
 
-        Map<Long, Long> idToRequestsMap = getRequestsMap(eventShortInfoDtoSet);
-        EventMapper.updateConfirmedRequestsToShortDtos(eventShortInfoDtoSet, idToRequestsMap);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForShortDtos(eventShortInfoDtoSet);
+        Map<Long, Long> eventIdToViews = getViewsMapForShortDtos(eventShortInfoDtoSet);
 
-        Map<Long, Long> idToViewsMap = getViewsMap(eventShortInfoDtoSet);
-        EventMapper.updateViewsToShortDtos(eventShortInfoDtoSet, idToViewsMap);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .build();
+
+        updateEventShortInfoDto(eventShortInfoDtoSet, updateParam);
 
         return CompilationMapper.toInfoDto(compilation, eventShortInfoDtoSet);
     }
@@ -154,7 +164,7 @@ public class CompilationServiceImpl implements CompilationService {
         return getIdToViewsMapByIdCollection(eventIdSet);
     }
 
-    private Map<Long, Long> getViewsMap(Collection<EventShortInfoDto> eventShortInfoDto) {
+    private Map<Long, Long> getViewsMapForShortDtos(Collection<EventShortInfoDto> eventShortInfoDto) {
         List<Long> eventIdList = eventShortInfoDto.stream()
                 .map(EventShortInfoDto::getId)
                 .collect(Collectors.toList());
@@ -200,7 +210,7 @@ public class CompilationServiceImpl implements CompilationService {
         return getIdToConfirmedRequestsMap(eventIdSet);
     }
 
-    private Map<Long, Long> getRequestsMap(Collection<EventShortInfoDto> eventShortInfoDto) {
+    private Map<Long, Long> getRequestsMapForShortDtos(Collection<EventShortInfoDto> eventShortInfoDto) {
         List<Long> eventIdList = eventShortInfoDto.stream()
                 .map(EventShortInfoDto::getId)
                 .collect(Collectors.toList());
@@ -216,5 +226,21 @@ public class CompilationServiceImpl implements CompilationService {
                         eventRequest -> 1L,
                         (oldValue, newValue) -> oldValue + 1L));
         return eventIdToConfirmedRequests;
+    }
+
+    private void updateEventShortInfoDto(Collection<EventShortInfoDto> eventShortInfoDtoList, EventUpdateParam updateParam) {
+        for (EventShortInfoDto fullInfoDto : eventShortInfoDtoList) {
+            long eventId = fullInfoDto.getId();
+            Map<Long, Long> eventIdToConfirmedRequests = updateParam.getEventIdToConfirmedRequests();
+            Map<Long, Long> eventIdToViews = updateParam.getEventIdToViews();
+
+            if (eventIdToConfirmedRequests != null) {
+                fullInfoDto.setConfirmedRequests(eventIdToConfirmedRequests.getOrDefault(eventId, 0L));
+            }
+
+            if (eventIdToViews != null) {
+                fullInfoDto.setViews(eventIdToViews.getOrDefault(eventId, 0L));
+            }
+        }
     }
 }

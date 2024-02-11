@@ -7,8 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
-import ru.yandex.practicum.eventComment.model.EventCommentRequestDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentRequestDto;
 import ru.yandex.practicum.eventComment.service.EventCommentService;
 import ru.yandex.practicum.util.OffsetPageable;
 
@@ -38,7 +38,7 @@ public class EventCommentPrivateController {
                                       @PathVariable(name = "commentId") long commentId,
                                       @RequestBody @Validated EventCommentRequestDto eventCommentRequestDto) {
         log.info("PATCH \"/user/{}/comments{}\" Body={}", authorId, commentId, eventCommentRequestDto);
-        EventCommentInfoDto eventRequestList = eventCommentService.updateWithUserIdValidation(authorId, commentId, eventCommentRequestDto);
+        EventCommentInfoDto eventRequestList = eventCommentService.update(authorId, commentId, eventCommentRequestDto);
         log.debug("EventRequest= updated=" + eventRequestList);
         return eventRequestList;
     }
@@ -48,7 +48,7 @@ public class EventCommentPrivateController {
     public void deleteByAuthorIdAndCommentId(@PathVariable(name = "userId") long authorId,
                                              @PathVariable(name = "commentId") long commentId) {
         log.info("DELETE \"/user/{}/events/{}/comments\"", authorId, commentId);
-        eventCommentService.deleteWithAuthorIdValidation(authorId, commentId);
+        eventCommentService.delete(authorId, commentId);
         log.debug("EventRequestList deleted with id=" + commentId);
     }
 

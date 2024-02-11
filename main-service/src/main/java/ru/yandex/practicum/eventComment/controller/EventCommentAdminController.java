@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.eventComment.GetEventCommentsRequest;
-import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
-import ru.yandex.practicum.eventComment.model.EventCommentRequestDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentRequestDto;
 import ru.yandex.practicum.eventComment.service.EventCommentService;
 import ru.yandex.practicum.util.OffsetPageable;
 
@@ -45,7 +45,7 @@ public class EventCommentAdminController {
                 .pageable(pageable)
                 .build();
 
-        List<EventCommentInfoDto> eventCommentInfoDtoList = eventCommentService.getFiltered(getEventCommentsRequest);
+        List<EventCommentInfoDto> eventCommentInfoDtoList = eventCommentService.findByParam(getEventCommentsRequest);
 
         log.debug("EventComments found=" + eventCommentInfoDtoList);
         return eventCommentInfoDtoList;

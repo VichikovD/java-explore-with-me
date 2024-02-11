@@ -17,7 +17,5 @@ public class GetEventCommentsRequest {
     List<Long> events;
     LocalDateTime rangeStart;
     LocalDateTime rangeEnd;
-    int offset;
-    int limit;
     Pageable pageable;
 }

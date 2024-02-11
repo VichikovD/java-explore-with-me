@@ -1,6 +1,8 @@
 package ru.yandex.practicum.eventComment.model;
 
 import ru.yandex.practicum.event.model.Event;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentRequestDto;
 import ru.yandex.practicum.user.User;
 
 import java.time.LocalDateTime;

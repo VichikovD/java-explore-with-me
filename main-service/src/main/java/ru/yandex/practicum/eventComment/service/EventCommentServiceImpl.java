@@ -10,9 +10,9 @@ import ru.yandex.practicum.event.repository.EventRepository;
 import ru.yandex.practicum.eventComment.EventCommentRepository;
 import ru.yandex.practicum.eventComment.GetEventCommentsRequest;
 import ru.yandex.practicum.eventComment.model.EventComment;
-import ru.yandex.practicum.eventComment.model.EventCommentInfoDto;
 import ru.yandex.practicum.eventComment.model.EventCommentMapper;
-import ru.yandex.practicum.eventComment.model.EventCommentRequestDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentInfoDto;
+import ru.yandex.practicum.eventComment.model.dto.EventCommentRequestDto;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.user.User;
 import ru.yandex.practicum.user.UserRepository;
@@ -45,7 +45,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     @Override
-    public EventCommentInfoDto updateWithUserIdValidation(long authorId, long commentId, EventCommentRequestDto eventCommentRequestDto) {
+    public EventCommentInfoDto update(long authorId, long commentId, EventCommentRequestDto eventCommentRequestDto) {
         EventComment eventComment = eventCommentRepository.findByIdAndAuthorId(commentId, authorId)
                 .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " was not found for authorName with id=" + authorId));
 
@@ -67,7 +67,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     @Override
-    public void deleteWithAuthorIdValidation(long authorId, long commentId) {
+    public void delete(long authorId, long commentId) {
         eventCommentRepository.findByIdAndAuthorId(commentId, authorId)
                 .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " was not found for author with id=" + authorId));
         eventCommentRepository.deleteById(commentId);
@@ -75,8 +75,6 @@ public class EventCommentServiceImpl implements EventCommentService {
 
     @Override
     public void delete(long commentId) {
-        eventCommentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " was not found"));
         eventCommentRepository.deleteById(commentId);
     }
 
@@ -88,7 +86,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     @Override
-    public List<EventCommentInfoDto> getFiltered(GetEventCommentsRequest getEventCommentsRequest) {
+    public List<EventCommentInfoDto> findByParam(GetEventCommentsRequest getEventCommentsRequest) {
         List<EventComment> eventCommentList = eventCommentRepository.findFilteredAsAdmin(getEventCommentsRequest.getEvents(),
                 getEventCommentsRequest.getRangeStart(), getEventCommentsRequest.getRangeEnd(), getEventCommentsRequest.getPageable());
 
