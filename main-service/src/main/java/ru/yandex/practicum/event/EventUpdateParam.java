@@ -1,7 +1,7 @@
-package ru.yandex.practicum.event.model.dto;
+package ru.yandex.practicum.event;
 
 import lombok.*;
-import ru.yandex.practicum.eventComment.model.EventComment;
+import ru.yandex.practicum.comment.model.EventComment;
 
 import java.util.List;
 import java.util.Map;

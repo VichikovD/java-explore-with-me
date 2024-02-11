@@ -3,9 +3,9 @@ package ru.yandex.practicum.compilation.model;
 import ru.yandex.practicum.compilation.model.dto.CompilationCreateDto;
 import ru.yandex.practicum.compilation.model.dto.CompilationInfoDto;
 import ru.yandex.practicum.compilation.model.dto.CompilationRequestDto;
+import ru.yandex.practicum.event.EventUpdateParam;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
-import ru.yandex.practicum.event.model.dto.EventUpdateParam;
 import ru.yandex.practicum.event.model.mapper.EventMapper;
 
 import java.util.ArrayList;

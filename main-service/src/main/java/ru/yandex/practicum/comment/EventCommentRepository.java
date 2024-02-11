@@ -1,9 +1,9 @@
-package ru.yandex.practicum.eventComment;
+package ru.yandex.practicum.comment;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.yandex.practicum.eventComment.model.EventComment;
+import ru.yandex.practicum.comment.model.EventComment;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

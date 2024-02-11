@@ -1,4 +1,4 @@
-package ru.yandex.practicum.eventComment.controller;
+package ru.yandex.practicum.comment.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,9 +7,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.eventComment.model.dto.EventCommentInfoDto;
-import ru.yandex.practicum.eventComment.model.dto.EventCommentRequestDto;
-import ru.yandex.practicum.eventComment.service.EventCommentService;
+import ru.yandex.practicum.comment.CommentDeleteParam;
+import ru.yandex.practicum.comment.CommentUpdateParam;
+import ru.yandex.practicum.comment.model.dto.EventCommentInfoDto;
+import ru.yandex.practicum.comment.model.dto.EventCommentRequestDto;
+import ru.yandex.practicum.comment.service.EventCommentService;
 import ru.yandex.practicum.util.OffsetPageable;
 
 import java.util.List;
@@ -38,7 +40,13 @@ public class EventCommentPrivateController {
                                       @PathVariable(name = "commentId") long commentId,
                                       @RequestBody @Validated EventCommentRequestDto eventCommentRequestDto) {
         log.info("PATCH \"/user/{}/comments{}\" Body={}", authorId, commentId, eventCommentRequestDto);
-        EventCommentInfoDto eventRequestList = eventCommentService.update(authorId, commentId, eventCommentRequestDto);
+        CommentUpdateParam commentUpdateParam = CommentUpdateParam.builder()
+                .commentId(commentId)
+                .authorId(authorId)
+                .eventCommentRequestDto(eventCommentRequestDto)
+                .build();
+
+        EventCommentInfoDto eventRequestList = eventCommentService.update(commentUpdateParam);
         log.debug("EventRequest= updated=" + eventRequestList);
         return eventRequestList;
     }
@@ -48,7 +56,12 @@ public class EventCommentPrivateController {
     public void deleteByAuthorIdAndCommentId(@PathVariable(name = "userId") long authorId,
                                              @PathVariable(name = "commentId") long commentId) {
         log.info("DELETE \"/user/{}/events/{}/comments\"", authorId, commentId);
-        eventCommentService.delete(authorId, commentId);
+        CommentDeleteParam deleteParam = CommentDeleteParam.builder()
+                .authorId(authorId)
+                .commentId(commentId)
+                .build();
+
+        eventCommentService.delete(deleteParam);
         log.debug("EventRequestList deleted with id=" + commentId);
     }
 

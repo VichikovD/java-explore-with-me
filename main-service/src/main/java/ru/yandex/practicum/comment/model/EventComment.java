@@ -1,4 +1,4 @@
-package ru.yandex.practicum.eventComment.model;
+package ru.yandex.practicum.comment.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
