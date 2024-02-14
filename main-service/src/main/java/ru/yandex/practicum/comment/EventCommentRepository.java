@@ -25,5 +25,5 @@ public interface EventCommentRepository extends JpaRepository<EventComment, Long
             "OR cast((:rangeEnd) AS timestamp) IS NULL " +
             "OR (c.createdOn BETWEEN (:rangeStart) AND (:rangeEnd))" +
             ")")
-    List<EventComment> findFilteredAsAdmin(Collection<Long> events, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
+    List<EventComment> findByParam(Collection<Long> events, LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 }

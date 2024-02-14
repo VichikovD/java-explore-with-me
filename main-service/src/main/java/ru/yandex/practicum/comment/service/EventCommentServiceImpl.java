@@ -87,7 +87,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
     @Override
     public List<EventCommentInfoDto> findByParam(CommentGetParam commentGetParam) {
-        List<EventComment> eventCommentList = eventCommentRepository.findFilteredAsAdmin(commentGetParam.getEvents(),
+        List<EventComment> eventCommentList = eventCommentRepository.findByParam(commentGetParam.getEvents(),
                 commentGetParam.getRangeStart(), commentGetParam.getRangeEnd(), commentGetParam.getPageable());
 
         return EventCommentMapper.modelListToInfoDtoList(eventCommentList);
