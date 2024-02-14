@@ -3,6 +3,7 @@ package ru.yandex.practicum.compilation.model;
 import ru.yandex.practicum.compilation.model.dto.CompilationCreateDto;
 import ru.yandex.practicum.compilation.model.dto.CompilationInfoDto;
 import ru.yandex.practicum.compilation.model.dto.CompilationRequestDto;
+import ru.yandex.practicum.event.EventUpdateParam;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.dto.EventShortInfoDto;
 import ru.yandex.practicum.event.model.mapper.EventMapper;
@@ -48,9 +49,11 @@ public class CompilationMapper {
     }
 
     public static List<CompilationInfoDto> modelListToInfoDtoList(List<Compilation> compilationList,
-                                                                  Map<Long, Long> viewsMap,
-                                                                  Map<Long, Long> requestsMap) {
+                                                                  EventUpdateParam updateParam) {
+        Map<Long, Long> viewsMap = updateParam.getEventIdToViews();
+        Map<Long, Long> requestsMap = updateParam.getEventIdToConfirmedRequests();
         List<CompilationInfoDto> compilationInfoDtoList = new ArrayList<>();
+
         for (Compilation compilation : compilationList) {
             Set<Event> eventSet = compilation.getEvents();
             Set<EventShortInfoDto> eventShortInfoDtoSet = EventMapper.modelSetToShortInfoDtoSet(eventSet);

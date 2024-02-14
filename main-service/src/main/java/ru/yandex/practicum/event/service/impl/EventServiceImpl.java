@@ -11,7 +11,12 @@ import ru.yandex.practicum.StatisticClient;
 import ru.yandex.practicum.StatisticInfo;
 import ru.yandex.practicum.category.Category;
 import ru.yandex.practicum.category.CategoryRepository;
+import ru.yandex.practicum.comment.EventCommentRepository;
+import ru.yandex.practicum.comment.model.EventComment;
+import ru.yandex.practicum.comment.model.EventCommentMapper;
+import ru.yandex.practicum.comment.model.dto.EventCommentInfoDto;
 import ru.yandex.practicum.dto.StatisticFilterDto;
+import ru.yandex.practicum.event.EventUpdateParam;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.Location;
 import ru.yandex.practicum.event.model.PublishState;
@@ -44,9 +49,9 @@ public class EventServiceImpl implements EventService {
     final LocationRepository locationRepository;
     final EventRequestRepository eventRequestRepository;
     final StatisticClient statisticClient;
+    final EventCommentRepository eventCommentRepository;
     static final String APPLICATION_NAME = "ewm-main-service";
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
 
     @Override
     public EventFullInfoDto updateWithoutValidation(long eventId, EventRequestAdminDto eventRequestDto) {
@@ -91,11 +96,18 @@ public class EventServiceImpl implements EventService {
         Event eventUpdated = eventRepository.save(event);
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(eventUpdated);
 
-        long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
-        eventFullInfoDto.setConfirmedRequests(confirmedRequests);
+        List<EventFullInfoDto> eventFullInfoDtoList = List.of(eventFullInfoDto);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(eventFullInfoDtoList);
 
-        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
-        EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .eventIdToComments(eventIdToComments)
+                .build();
+
+        updateEventFullInfoDto(eventFullInfoDtoList, updateParam);
 
         return eventFullInfoDto;
     }
@@ -106,12 +118,17 @@ public class EventServiceImpl implements EventService {
                 getFullEventsRequest.getCategories(), getFullEventsRequest.getRangeStart(), getFullEventsRequest.getRangeEnd(), getFullEventsRequest.getPageable());
         List<EventFullInfoDto> eventFullInfoDtoList = EventMapper.modelListToFullInfoDtoList(eventList);
 
-
         Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForFullDtos(eventFullInfoDtoList);
-        EventMapper.updateConfirmedRequestsToFullDtos(eventFullInfoDtoList, eventIdToConfirmedRequests);
-
         Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(eventFullInfoDtoList);
-        EventMapper.updateViewsToFullDtos(eventFullInfoDtoList, eventIdToViews);
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(eventFullInfoDtoList);
+
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .eventIdToComments(eventIdToComments)
+                .build();
+
+        updateEventFullInfoDto(eventFullInfoDtoList, updateParam);
 
         return eventFullInfoDtoList;
     }
@@ -129,10 +146,14 @@ public class EventServiceImpl implements EventService {
         }
 
         Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForShortDtos(eventShortInfoDtoList);
-        EventMapper.updateConfirmedRequestsToShortDtos(eventShortInfoDtoList, eventIdToConfirmedRequests);
-
         Map<Long, Long> eventIdToViews = getViewsMapForShortDtos(eventShortInfoDtoList);
-        EventMapper.updateViewsToShortDtos(eventShortInfoDtoList, eventIdToViews);
+
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .build();
+
+        updateEventShortInfoDto(eventShortInfoDtoList, updateParam);
 
         return eventShortInfoDtoList;
     }
@@ -143,10 +164,18 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(event);
 
-        eventFullInfoDto.setConfirmedRequests(eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED));
+        List<EventFullInfoDto> eventFullInfoDtoList = List.of(eventFullInfoDto);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(eventFullInfoDtoList);
 
-        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
-        EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .eventIdToComments(eventIdToComments)
+                .build();
+
+        updateEventFullInfoDto(eventFullInfoDtoList, updateParam);
 
         return eventFullInfoDto;
     }
@@ -170,6 +199,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullInfoDto.setConfirmedRequests(0);
         eventFullInfoDto.setViews(0);
+        eventFullInfoDto.setComments(new ArrayList<>());
         return eventFullInfoDto;
     }
 
@@ -210,11 +240,18 @@ public class EventServiceImpl implements EventService {
         Event eventUpdated = eventRepository.save(event);
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(eventUpdated);
 
-        long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
-        eventFullInfoDto.setConfirmedRequests(confirmedRequests);
+        List<EventFullInfoDto> eventFullInfoDtoList = List.of(eventFullInfoDto);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(eventFullInfoDtoList);
 
-        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
-        EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .eventIdToComments(eventIdToComments)
+                .build();
+
+        updateEventFullInfoDto(eventFullInfoDtoList, updateParam);
 
         return eventFullInfoDto;
     }
@@ -230,10 +267,14 @@ public class EventServiceImpl implements EventService {
         List<EventShortInfoDto> eventShortInfoDtoList = EventMapper.modelListToShortInfoDtoList(eventList);
 
         Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForShortDtos(eventShortInfoDtoList);
-        EventMapper.updateConfirmedRequestsToShortDtos(eventShortInfoDtoList, eventIdToConfirmedRequests);
-
         Map<Long, Long> eventIdToViews = getViewsMapForShortDtos(eventShortInfoDtoList);
-        EventMapper.updateViewsToShortDtos(eventShortInfoDtoList, eventIdToViews);
+
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .build();
+
+        updateEventShortInfoDto(eventShortInfoDtoList, updateParam);
 
         return eventShortInfoDtoList;
     }
@@ -244,11 +285,18 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found for initiator with id=" + initiatorId));
         EventFullInfoDto eventFullInfoDto = EventMapper.toFullInfoDto(event);
 
-        long confirmedRequests = eventRequestRepository.countByEventIdAndStatus(eventId, EventRequestStatus.CONFIRMED);
-        eventFullInfoDto.setConfirmedRequests(confirmedRequests);
+        List<EventFullInfoDto> eventFullInfoDtoList = List.of(eventFullInfoDto);
+        Map<Long, Long> eventIdToConfirmedRequests = getRequestsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(eventFullInfoDtoList);
+        Map<Long, List<EventComment>> eventIdToComments = getCommentsMapForFullDtos(eventFullInfoDtoList);
 
-        Map<Long, Long> eventIdToViews = getViewsMapForFullDtos(List.of(eventFullInfoDto));
-        EventMapper.updateViewsToFullDtos(List.of(eventFullInfoDto), eventIdToViews);
+        EventUpdateParam updateParam = EventUpdateParam.builder()
+                .eventIdToConfirmedRequests(eventIdToConfirmedRequests)
+                .eventIdToViews(eventIdToViews)
+                .eventIdToComments(eventIdToComments)
+                .build();
+
+        updateEventFullInfoDto(eventFullInfoDtoList, updateParam);
 
         return eventFullInfoDto;
     }
@@ -353,17 +401,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getViewsMapForShortDtos(Collection<EventShortInfoDto> eventCollection) {
-        List<Long> eventIdList = eventCollection.stream()
-                .map(EventShortInfoDto::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIdList = getIdListFromShortEventDtos(eventCollection);
 
         return getIdToViewsMapByIdCollection(eventIdList);
     }
 
-    private Map<Long, Long> getViewsMapForFullDtos(Collection<EventFullInfoDto> eventCollection) {
-        List<Long> eventIdList = eventCollection.stream()
-                .map((EventFullInfoDto::getId))
-                .collect(Collectors.toList());
+    private Map<Long, Long> getViewsMapForFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
+        List<Long> eventIdList = getIdListFromFullEventDtos(eventFullInfoDtoList);
 
         return getIdToViewsMapByIdCollection(eventIdList);
     }
@@ -398,17 +442,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getRequestsMapForShortDtos(Collection<EventShortInfoDto> eventShortInfoDtoList) {
-        List<Long> eventIdList = eventShortInfoDtoList.stream()
-                .map(EventShortInfoDto::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIdList = getIdListFromShortEventDtos(eventShortInfoDtoList);
 
         return getIdToConfirmedRequestsMap(eventIdList);
     }
 
     private Map<Long, Long> getRequestsMapForFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
-        List<Long> eventIdList = eventFullInfoDtoList.stream()
-                .map(EventFullInfoDto::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIdList = getIdListFromFullEventDtos(eventFullInfoDtoList);
 
         return getIdToConfirmedRequestsMap(eventIdList);
     }
@@ -421,5 +461,70 @@ public class EventServiceImpl implements EventService {
                         eventRequest -> 1L,
                         (oldValue, newValue) -> oldValue + 1L));
         return eventIdToConfirmedRequests;
+    }
+
+    private Map<Long, List<EventComment>> getCommentsMapForFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
+        List<Long> eventIdList = getIdListFromFullEventDtos(eventFullInfoDtoList);
+
+        return getIdToCommentsMap(eventIdList);
+    }
+
+    private Map<Long, List<EventComment>> getIdToCommentsMap(Collection<Long> eventIdList) {
+        List<EventComment> eventList = eventCommentRepository.findByEventIdIn(eventIdList);
+
+        Map<Long, List<EventComment>> eventIdToConfirmedRequests = eventList.stream()
+                .collect(Collectors.groupingBy(eventComment -> eventComment.getEvent().getId()));
+        return eventIdToConfirmedRequests;
+    }
+
+    private List<Long> getIdListFromFullEventDtos(Collection<EventFullInfoDto> eventFullInfoDtoList) {
+        return eventFullInfoDtoList.stream()
+                .map(EventFullInfoDto::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getIdListFromShortEventDtos(Collection<EventShortInfoDto> eventShortInfoDtoList) {
+        return eventShortInfoDtoList.stream()
+                .map(EventShortInfoDto::getId)
+                .collect(Collectors.toList());
+    }
+
+    private void updateEventFullInfoDto(Collection<EventFullInfoDto> eventFullInfoDtoList, EventUpdateParam updateParam) {
+        for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
+            long eventId = fullInfoDto.getId();
+            Map<Long, Long> eventIdToConfirmedRequests = updateParam.getEventIdToConfirmedRequests();
+            Map<Long, Long> eventIdToViews = updateParam.getEventIdToViews();
+            Map<Long, List<EventComment>> eventIdToComments = updateParam.getEventIdToComments();
+
+            if (eventIdToConfirmedRequests != null) {
+                fullInfoDto.setConfirmedRequests(eventIdToConfirmedRequests.getOrDefault(eventId, 0L));
+            }
+
+            if (eventIdToViews != null) {
+                fullInfoDto.setViews(eventIdToViews.getOrDefault(eventId, 0L));
+            }
+
+            if (eventIdToComments != null) {
+                List<EventComment> comments = eventIdToComments.getOrDefault(eventId, new ArrayList<>());
+                List<EventCommentInfoDto> commentDtos = EventCommentMapper.modelListToInfoDtoList(comments);
+                fullInfoDto.setComments(commentDtos);
+            }
+        }
+    }
+
+    private void updateEventShortInfoDto(Collection<EventShortInfoDto> eventShortInfoDtoList, EventUpdateParam updateParam) {
+        for (EventShortInfoDto fullInfoDto : eventShortInfoDtoList) {
+            long eventId = fullInfoDto.getId();
+            Map<Long, Long> eventIdToConfirmedRequests = updateParam.getEventIdToConfirmedRequests();
+            Map<Long, Long> eventIdToViews = updateParam.getEventIdToViews();
+
+            if (eventIdToConfirmedRequests != null) {
+                fullInfoDto.setConfirmedRequests(eventIdToConfirmedRequests.getOrDefault(eventId, 0L));
+            }
+
+            if (eventIdToViews != null) {
+                fullInfoDto.setViews(eventIdToViews.getOrDefault(eventId, 0L));
+            }
+        }
     }
 }

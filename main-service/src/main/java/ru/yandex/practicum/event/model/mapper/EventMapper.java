@@ -189,27 +189,11 @@ public class EventMapper {
         }
     }
 
-    public static void updateConfirmedRequestsToFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList,
-                                                         Map<Long, Long> eventIdToConfirmedRequests) {
-        for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
-            Long views = eventIdToConfirmedRequests.getOrDefault(fullInfoDto.getId(), 0L);
-            fullInfoDto.setConfirmedRequests(views);
-        }
-    }
-
     public static void updateConfirmedRequestsToShortDtos(Collection<EventShortInfoDto> eventFullInfoDtoList,
                                                           Map<Long, Long> eventIdToConfirmedRequests) {
         for (EventShortInfoDto shortInfoDto : eventFullInfoDtoList) {
             Long views = eventIdToConfirmedRequests.getOrDefault(shortInfoDto.getId(), 0L);
             shortInfoDto.setConfirmedRequests(views);
-        }
-    }
-
-    public static void updateViewsToFullDtos(Collection<EventFullInfoDto> eventFullInfoDtoList,
-                                             Map<Long, Long> eventIdToViews) {
-        for (EventFullInfoDto fullInfoDto : eventFullInfoDtoList) {
-            Long views = eventIdToViews.getOrDefault(fullInfoDto.getId(), 0L);
-            fullInfoDto.setViews(views);
         }
     }
 

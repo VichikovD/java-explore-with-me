@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.category.CategoryDto;
+import ru.yandex.practicum.comment.model.dto.EventCommentInfoDto;
 import ru.yandex.practicum.event.model.PublishState;
 import ru.yandex.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,4 +55,6 @@ public class EventFullInfoDto {
     String title;
 
     long views;
+
+    List<EventCommentInfoDto> comments;
 }
