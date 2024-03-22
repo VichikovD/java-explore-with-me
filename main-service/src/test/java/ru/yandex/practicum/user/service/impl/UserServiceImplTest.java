@@ -60,6 +60,7 @@ class UserServiceImplTest {
         assertThat(exception.getMessage(), is("User with id=1 was not found"));
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -75,6 +76,7 @@ class UserServiceImplTest {
         assertThat(actualUserDto.getEmail(), is("user@email.ru"));
         Mockito.verify(userRepository, Mockito.times(1))
                 .findById(1L);
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -94,6 +96,9 @@ class UserServiceImplTest {
         assertThat(actualUserDto.getId(), is(2L));
         assertThat(actualUserDto.getEmail(), is("email@user.com2"));
         assertThat(actualUserDto.getName(), is("name"));
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findAll(pageable);
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
@@ -101,7 +106,32 @@ class UserServiceImplTest {
     }
 
     @Test
+    void delete_whenUserNotFoundById_thenThrowException() {
+        Mockito.when(userRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        Exception exception = Assertions.assertThrows(NotFoundException.class,
+                () -> userService.delete(1L));
+
+        assertThat(exception.getMessage(), is("User with id=1 was not found"));
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(1L);
+        Mockito.verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
     void delete() {
+        User userFromDB = getUser();
+        Mockito.when(userRepository.findById(1L))
+                .thenReturn(Optional.of(userFromDB));
+
+        userService.delete(1L);
+
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findById(1L);
+        Mockito.verify(userRepository, Mockito.times(1))
+                .deleteById(1L);
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     private UserDto getUserDtoNullId() {
@@ -112,13 +142,13 @@ class UserServiceImplTest {
                 .build();
     }
 
-    private User getUserNullId() {
+    /*private User getUserNullId() {
         return User.builder()
                 .id(null)
                 .email("user@email.ru")
                 .name("name")
                 .build();
-    }
+    }*/
 
     private User getUser() {
         return User.builder()
