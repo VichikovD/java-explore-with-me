@@ -103,6 +103,23 @@ class UserServiceImplTest {
 
     @Test
     void getAllByIdInFiltered() {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        Pageable pageable = new OffsetPageable(1, 1, sort);
+        User user = new User(2L, "name", "email@user.com2");
+        List<User> usersFromDB = List.of(user);
+        Mockito.when(userRepository.findByIdIn(List.of(2L), pageable))
+                .thenReturn(usersFromDB);
+
+        List<UserDto> actualUserDtoList = userService.getAllByIdInFiltered(List.of(2L), pageable);
+        UserDto actualUserDto = actualUserDtoList.get(0);
+
+        assertThat(actualUserDtoList.size(), is(1));
+        assertThat(actualUserDto.getId(), is(2L));
+        assertThat(actualUserDto.getEmail(), is("email@user.com2"));
+        assertThat(actualUserDto.getName(), is("name"));
+        Mockito.verify(userRepository, Mockito.times(1))
+                .findByIdIn(List.of(2L), pageable);
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
